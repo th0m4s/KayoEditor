@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -148,8 +149,23 @@ namespace KayoEditor
                 for (int y = 0; y < Height; y++)
                 {
                     Pixel pixel = this[x, y];
-                    byte avg = (byte)((pixel.R + pixel.G + pixel.B) / 3);
-                    result[x, y] = new Pixel(avg, avg, avg);
+                    result[x, y] = pixel.Greyscale;
+                }
+            }
+
+            return result;
+        }
+
+        public ImagePSI BlackAndWhite()
+        {
+            ImagePSI result = this.Copy();
+
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = this[x, y];
+                    result[x, y] = pixel.Greyscale.R > 127 ? new Pixel(255) : new Pixel(0);
                 }
             }
 
