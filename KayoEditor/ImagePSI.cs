@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace KayoEditor
 {
-    class ImagePSI
+    public class ImagePSI
     {
         public const int OFFSET_TYPE = 0x00;
         public const int OFFSET_FILESIZE = 0x02;
@@ -20,85 +23,61 @@ namespace KayoEditor
         public const int OFFSET_COLORPLANES = 0x1a;
         public const int OFFSET_COLORDEPTH = 0x1c;
 
-        byte[] header;
-        Pixel[,] _pixels;
+        byte[] rawHeader;
+        byte[] rawPixels;
 
-        public string Type => Encoding.ASCII.GetString(header.ExtractBytes(2, OFFSET_TYPE));
-        public uint FileSize => Utils.LittleEndianToUInt(header, OFFSET_FILESIZE);
-        public uint StartOffset => Utils.LittleEndianToUInt(header, OFFSET_STARTOFFSET);
+        public string Type => Encoding.ASCII.GetString(rawHeader.ExtractBytes(2, OFFSET_TYPE));
+        public uint FileSize => Utils.LittleEndianToUInt(rawHeader, OFFSET_FILESIZE);
+        public uint StartOffset => Utils.LittleEndianToUInt(rawHeader, OFFSET_STARTOFFSET);
 
-        public uint InfoHeaderSize => Utils.LittleEndianToUInt(header, OFFSET_INFOHEADERSIZE);
-        public int Width => Utils.LittleEndianToInt(header, OFFSET_WIDTH);
-        public int Height => Utils.LittleEndianToInt(header, OFFSET_HEIGHT);
-        public ushort ColorPlanes => Utils.LittleEndianToUShort(header, OFFSET_COLORPLANES);
-        public ushort ColorDepth => Utils.LittleEndianToUShort(header, OFFSET_COLORDEPTH);
-        int PaddingLength => (4 - (Width * (ColorDepth / 8) % 4)) % 4;
+        public uint InfoHeaderSize => Utils.LittleEndianToUInt(rawHeader, OFFSET_INFOHEADERSIZE);
+        public int Width => Utils.LittleEndianToInt(rawHeader, OFFSET_WIDTH);
+        public int Height => Utils.LittleEndianToInt(rawHeader, OFFSET_HEIGHT);
+        public ushort ColorPlanes => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORPLANES);
+        public ushort ColorDepth => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORDEPTH);
+        public int Stride => (Width * ColorDepth / 8 + 3) / 4 * 4; // by dividing then multiplying, we floor to the nearest integer
+
+        public ReadOnlyCollection<byte> RawHeader => Array.AsReadOnly(rawHeader);
+        public ReadOnlyCollection<byte> RawPixels => Array.AsReadOnly(rawPixels);
 
         public ImagePSI(string filename)
         {
             using (FileStream stream = File.OpenRead(filename))
             {
-                header = stream.ReadBytes(54);
+                rawHeader = stream.ReadBytes(54);
+                if (Type != "BM")
+                    throw new FormatException("Invalid magic file type!");
 
-                _pixels = new Pixel[Height, Width];
-                int padding = PaddingLength;
-
-                for (int y = 0; y < Height; y++)
-                {
-                    for (int x = 0; x < Width; x++)
-                    {
-                        byte[] color = stream.ReadBytes(3);
-                        _pixels[Height - y - 1, x] = new Pixel(color[2], color[1], color[0]);
-                    }
-
-                    stream.ReadBytes(padding);
-                }
+                rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));
             }
         }
 
-        public ImagePSI(int width, int height, Pixel defaultColor = null)
+        public ImagePSI(int width, int height)
         {
-            if (defaultColor == null)
-                defaultColor = new Pixel();
+            rawHeader = new byte[54];
 
-            header = new byte[54];
-
-            header.InsertBytes(new byte[] { 0x42, 0x4d }, OFFSET_TYPE);
-            header.InsertBytes(Utils.UIntToLittleEndian(0x36), OFFSET_STARTOFFSET);
+            rawHeader.InsertBytes(Encoding.ASCII.GetBytes("BM"), OFFSET_TYPE);
+            rawHeader.InsertBytes(Utils.UIntToLittleEndian((uint)rawHeader.Length), OFFSET_STARTOFFSET);
 
 
-            header.InsertBytes(Utils.UShortToLittleEndian(0x28), OFFSET_INFOHEADERSIZE);
-            header.InsertBytes(Utils.IntToLittleEndian(width), OFFSET_WIDTH);
-            header.InsertBytes(Utils.IntToLittleEndian(height), OFFSET_HEIGHT);
-            header.InsertBytes(Utils.UShortToLittleEndian(1), OFFSET_COLORPLANES);
-            header.InsertBytes(Utils.UShortToLittleEndian(24), OFFSET_COLORDEPTH);
+            rawHeader.InsertBytes(Utils.UShortToLittleEndian(0x28), OFFSET_INFOHEADERSIZE);
+            rawHeader.InsertBytes(Utils.IntToLittleEndian(width), OFFSET_WIDTH);
+            rawHeader.InsertBytes(Utils.IntToLittleEndian(height), OFFSET_HEIGHT);
+            rawHeader.InsertBytes(Utils.UShortToLittleEndian(1), OFFSET_COLORPLANES);
+            rawHeader.InsertBytes(Utils.UShortToLittleEndian(24), OFFSET_COLORDEPTH);
 
-            // OFFSET_STARTHEADER c'est le début des pixels, donc égal à la taille de l'entête
-            header.InsertBytes(Utils.UIntToLittleEndian((uint)(OFFSET_STARTOFFSET + height * (width * ColorDepth / 8 + PaddingLength))), OFFSET_FILESIZE);
+            rawPixels = new byte[height * Stride];
 
-            _pixels = new Pixel[height, width];
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    _pixels[y, x] = defaultColor;
-                }
-            }
+            rawHeader.InsertBytes(Utils.UIntToLittleEndian((uint)(rawHeader.Length + rawPixels.Length)), OFFSET_FILESIZE);
         }
 
         public ImagePSI(ImagePSI original)
         {
-            header = new byte[original.header.Length];
-            Array.Copy(original.header, header, header.Length);
+            rawHeader = new byte[original.rawHeader.Length];
+            Array.Copy(original.rawHeader, rawHeader, rawHeader.Length);
 
-            _pixels = new Pixel[original._pixels.GetLength(0), original._pixels.GetLength(1)];
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    _pixels[y, x] = new Pixel(original._pixels[y, x]);
-                }
-            }
+            rawPixels = new byte[original.rawPixels.Length];
+            Array.Copy(original.rawPixels, rawPixels, rawPixels.Length);
         }
 
         public ImagePSI Copy()
@@ -106,16 +85,21 @@ namespace KayoEditor
             return new ImagePSI(this);
         }
 
+        private int _position(int x, int y) => x * 3 + (Height - y - 1) * Stride;
         public Pixel this[int x, int y] // la propriété c'est l'instance elle-même
         { // instance[x, y] <=> instance._pixels[y, x]
             get
             {
-                return _pixels[y, x];
+                int position = _position(x, y);
+                return new Pixel(rawPixels[position + 2], rawPixels[position + 1], rawPixels[position + 0]);
             }
 
             set
             {
-                _pixels[y, x] = value;
+                int position = _position(x, y);
+                rawPixels[position + 2] = value.R;
+                rawPixels[position + 1] = value.G;
+                rawPixels[position + 0] = value.B;
             }
         }
 
@@ -123,20 +107,8 @@ namespace KayoEditor
         {
             using (FileStream stream = File.OpenWrite(filename))
             {
-                stream.Write(header, 0, header.Length);
-                byte[] padding = new byte[PaddingLength];
-
-                for (int y = 0; y < Height; y++)
-                {
-                    for (int x = 0; x < Width; x++)
-                    {
-                        Pixel pixel = this[x, Height - y - 1];
-                        byte[] color = { pixel.B, pixel.G, pixel.R };
-                        stream.Write(color, 0, color.Length);
-                    }
-
-                    stream.Write(padding, 0, padding.Length);
-                }
+                stream.Write(rawHeader, 0, rawHeader.Length);
+                stream.Write(rawPixels, 0, rawPixels.Length);
             }
         }
 
@@ -148,8 +120,7 @@ namespace KayoEditor
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    Pixel pixel = this[x, y];
-                    result[x, y] = pixel.Greyscale;
+                    result[x, y] = this[x, y].Greyscale;
                 }
             }
 
@@ -175,10 +146,10 @@ namespace KayoEditor
         public ImagePSI Scale(float scale)
         {
             if (scale == 0)
-                throw new ArgumentOutOfRangeException("scale must not be 0");
+                throw new ArgumentOutOfRangeException("scale", "scale must not be 0");
 
             if (scale < 0)
-                throw new ArgumentOutOfRangeException("scale must be a positive number");
+                throw new ArgumentOutOfRangeException("scale", "scale must be a positive number");
 
             int newWidth = (int)(Width * scale);
             int newHeight = (int)(Height * scale);

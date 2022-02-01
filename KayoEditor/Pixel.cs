@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KayoEditor
 {
-    class Pixel
+    public class Pixel
     {
         byte r;
         byte g;

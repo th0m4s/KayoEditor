@@ -1,0 +1,31 @@
+﻿<Window x:Class="KayoEditorGUI.MessagePopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KayoEditorGUI"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Title="Kayo Editor Message" SizeToContent="WidthAndHeight" Background="#36393F">
+
+    <Border BorderThickness="1" BorderBrush="#202225">
+        <Grid Name="EntireWindow" MinHeight="100" MinWidth="250" Height="Auto" Width="Auto">
+            <Grid Name="TopBar" VerticalAlignment="Top" Background="#202225" MouseDown="TopBar_MouseDown" Height="22">
+                <TextBlock HorizontalAlignment="Left" Margin="6,2,0,0" Foreground="White" Width="115" Height="16"
+                           VerticalAlignment="Top">Kayo Editor Message</TextBlock>
+            </Grid>
+            <Grid Name="Contents" Margin="0,22,0,0">
+                <TextBlock HorizontalAlignment="Center" Height="Auto" Width="Auto" TextWrapping="Wrap" VerticalAlignment="Top"
+                           Name="MessageContent" Text="" TextAlignment="Center" Margin="10,10,10,50" Foreground="White" />
+                
+                <UniformGrid Name="ButtonsGrid" Columns="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="5,7" >
+                    <Button Name="ButtonCancel" Click="ButtonCancel_Click" DockPanel.Dock="Bottom" Content="Annuler" Padding="5,3" Visibility="Collapsed" Margin="3,0" />
+                    <Button Name="ButtonContinue" Click="ButtonContinue_Click" DockPanel.Dock="Bottom" Content="Continuer" Padding="5,3" Visibility="Collapsed" Margin="3,0" />
+                    <Button Name="ButtonRetry" Click="ButtonRetry_Click" DockPanel.Dock="Bottom" Content="Réessayer" Padding="5,3" Visibility="Collapsed" Margin="3,0" />
+                </UniformGrid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
