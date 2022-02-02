@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -240,5 +240,48 @@ namespace KayoEditorGUI
         }
 
         #endregion
+
+        private void TransformGreyscale_Click(object sender, RoutedEventArgs e)
+        {
+            resultImage = resultImage.Greyscale();
+            UpdateDisplayed_ResultImage();
+        }
+
+        private void TransformBlackWhite_Click(object sender, RoutedEventArgs e)
+        {
+            resultImage = resultImage.BlackAndWhite();
+            UpdateDisplayed_ResultImage();
+        }
+
+        private void TransformScale_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformRotate_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformFlip_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MoreTransforms_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BackMenu_Click(object sender, RoutedEventArgs e)
+        {
+            ShowScreen_Welcome();
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            resultImage = loadedImage.Copy();
+            UpdateDisplayed_ResultImage();
+        }
     }
 }

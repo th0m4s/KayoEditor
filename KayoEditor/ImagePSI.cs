@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
@@ -39,8 +39,12 @@ namespace KayoEditor
             using (FileStream stream = File.OpenRead(filename))
             {
                 rawHeader = stream.ReadBytes(54);
+
                 if (Type != "BM")
-                    throw new FormatException("Invalid magic file type!");
+                    throw new FormatException("invalid magic file type!");
+
+                if (ColorDepth != 24)
+                    throw new FormatException("KayoEditor can only load images of depth 24-bit");
 
                 rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));
             }
