@@ -14,4 +14,17 @@
     <ProjectReference Include="..\KayoEditor\KayoEditor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="QuestionPopup.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="QuestionPopup.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

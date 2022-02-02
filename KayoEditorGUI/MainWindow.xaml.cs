@@ -17,7 +17,10 @@ namespace KayoEditorGUI
     public partial class MainWindow : Window
     {
         ImagePSI loadedImage = null;
+        DisplayedImagePSI loadedImageDisplay = null;
+
         ImagePSI resultImage = null;
+        DisplayedImagePSI resultImageDisplay = null;
 
         public MainWindow()
         {
@@ -25,6 +28,9 @@ namespace KayoEditorGUI
 
             MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             ShowScreen_Welcome();
+
+            loadedImageDisplay = new DisplayedImagePSI(LoadedImage, LoadedImageDetails);
+            resultImageDisplay = new DisplayedImagePSI(ResultImage, ResultImageDetails);
         }
 
         #region Topbar handlers
@@ -142,8 +148,8 @@ namespace KayoEditorGUI
 
                         ShowScreen_Editor();
 
-                        UpdateDisplayed_LoadedImage();
-                        UpdateDisplayed_ResultImage();
+                        loadedImageDisplay.UpdateImage(loadedImage);
+                        resultImageDisplay.UpdateImage(resultImage);
                     }
                 } catch(Exception e)
                 {
@@ -189,6 +195,14 @@ namespace KayoEditorGUI
 
         public void ShowScreen_Welcome()
         {
+            loadedImage = null;
+            resultImage = null;
+
+            LoadedImage.Source = null;
+            ResultImage.Source = null;
+
+            GC.Collect();
+
             Grid_WelcomeScreen.Visibility = Visibility.Visible;
             Grid_EditorScreen.Visibility = Visibility.Collapsed;
         }
@@ -208,32 +222,6 @@ namespace KayoEditorGUI
             Grid_EditorScreen.Visibility = Visibility.Visible;
         }
 
-        public void UpdateDisplayed_LoadedImage()
-        {
-            if(loadedImage != null)
-            {
-                WriteableBitmap writeableBitmap = new WriteableBitmap(loadedImage.Width, loadedImage.Height, 96, 96, PixelFormats.Bgr24, null);
-                writeableBitmap.WritePixels(new Int32Rect(0, 0, loadedImage.Width, loadedImage.Height), loadedImage.RawPixels.ToArray(), loadedImage.Stride, 0, 0);
-
-                DisplayLoadedImage.Source = writeableBitmap;
-
-                LoadedImageDetails.Text = loadedImage.Width + "x" + loadedImage.Height + " pixels (" + loadedImage.Width * loadedImage.Height + " pixels)";
-            }
-        }
-
-        public void UpdateDisplayed_ResultImage()
-        {
-            if (resultImage != null)
-            {
-                WriteableBitmap writeableBitmap = new WriteableBitmap(resultImage.Width, resultImage.Height, 96, 96, PixelFormats.Bgr24, null);
-                writeableBitmap.WritePixels(new Int32Rect(0, 0, resultImage.Width, resultImage.Height), resultImage.RawPixels.ToArray(), resultImage.Stride, 0, 0);
-
-                DisplayResultImage.Source = writeableBitmap;
-
-                ResultImageDetails.Text = resultImage.Width + "x" + resultImage.Height + " pixels (" + resultImage.Width * resultImage.Height + " pixels)";
-            }
-        }
-
         private void SaveImage_Click(object sender, RoutedEventArgs e)
         {
             OpenSaveImage();
@@ -244,33 +232,66 @@ namespace KayoEditorGUI
         private void TransformGreyscale_Click(object sender, RoutedEventArgs e)
         {
             resultImage = resultImage.Greyscale();
-            UpdateDisplayed_ResultImage();
+            resultImageDisplay.UpdateImage(resultImage);
         }
 
         private void TransformBlackWhite_Click(object sender, RoutedEventArgs e)
         {
             resultImage = resultImage.BlackAndWhite();
-            UpdateDisplayed_ResultImage();
+            resultImageDisplay.UpdateImage(resultImage);
         }
 
         private void TransformScale_Click(object sender, RoutedEventArgs e)
         {
+            QuestionPopup popup = new QuestionPopup("Facteur d'agrandissement :");
 
+            float scale = popup.AskFloat(true);
+            if(popup.Confirmed)
+            {
+                if(scale > 0)
+                {
+                    try
+                    {
+                        resultImage = resultImage.Scale(scale);
+                        resultImageDisplay.UpdateImage(resultImage);
+                    } catch(Exception exception)
+                    {
+                        MessagePopup.Show("Impossible d'agrandir l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    }
+                } else
+                {
+                    MessagePopup.Show("Le facteur d'agrandissement doit être un nombre non nul (>0) !");
+                }
+            }
         }
 
         private void TransformRotate_Click(object sender, RoutedEventArgs e)
         {
-
+            // ...
+            resultImageDisplay.UpdateImage(resultImage);
         }
 
         private void TransformFlip_Click(object sender, RoutedEventArgs e)
         {
+            QuestionPopup popup = new QuestionPopup("Direction de l'effet miroir :");
 
+            FlipMode mode = popup.AskEnum<FlipMode>();
+            if(popup.Confirmed)
+            {
+                try
+                {
+                    resultImage = resultImage.Flip(mode);
+                    resultImageDisplay.UpdateImage(resultImage);
+                } catch(Exception exception)
+                {
+                    MessagePopup.Show("Impossible de retourner l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
         }
 
         private void MoreTransforms_Click(object sender, RoutedEventArgs e)
         {
-
+            // ...
         }
 
         private void BackMenu_Click(object sender, RoutedEventArgs e)
@@ -281,7 +302,7 @@ namespace KayoEditorGUI
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             resultImage = loadedImage.Copy();
-            UpdateDisplayed_ResultImage();
+            resultImageDisplay.UpdateImage(resultImage);
         }
     }
 }

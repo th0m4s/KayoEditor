@@ -82,7 +82,7 @@
                     <Button Content="Ouvrir un autre fichier" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
                             VerticalAlignment="Center" Padding="6,3" Margin="0,2,8,0" Click="OpenImage_Clicked" />
                     
-                    <Image Name="DisplayLoadedImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="0" Grid.Row="1" 
+                    <Image Name="LoadedImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="0" Grid.Row="1" 
                            VerticalAlignment="Center" Width="Auto" RenderTransformOrigin="0.5,0.5" Margin="10,10,10,25">
                         <Image.RenderTransform>
                             <RotateTransform Angle="180"/>
@@ -98,7 +98,7 @@
                     <Button Name="SaveImageButton" Content="Sauvegarder le résultat" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"
                             VerticalAlignment="Center" Padding="6,3" Margin="0,2,8,0" Click="SaveImage_Click" />
 
-                    <Image Name="DisplayResultImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="2" Grid.Row="1"
+                    <Image Name="ResultImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="2" Grid.Row="1"
                            VerticalAlignment="Center" Width="Auto" RenderTransformOrigin="0.5,0.5" Margin="10,10,10,25">
                         <Image.RenderTransform>
                             <RotateTransform Angle="180"/>
