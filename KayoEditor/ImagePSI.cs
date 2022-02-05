@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
@@ -31,8 +31,11 @@ namespace KayoEditor
         public ushort ColorDepth => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORDEPTH);
         public int Stride => (Width * ColorDepth / 8 + 3) / 4 * 4; // by dividing then multiplying, we floor to the nearest integer
 
-        public ReadOnlyCollection<byte> RawHeader => Array.AsReadOnly(rawHeader);
-        public ReadOnlyCollection<byte> RawPixels => Array.AsReadOnly(rawPixels);
+        /*public ReadOnlyCollection<byte> RawHeader => Array.AsReadOnly(rawHeader);
+        public ReadOnlyCollection<byte> RawPixels => Array.AsReadOnly(rawPixels);*/
+
+        public byte[] RawHeader => rawHeader;
+        public byte[] RawPixels => rawPixels;
 
         public ImagePSI(string filename)
         {
@@ -192,6 +195,13 @@ namespace KayoEditor
 
     public enum FlipMode
     {
-        FlipX, FlipY, FlipBoth
+        [Description("Inverser les X")]
+        FlipX,
+
+        [Description("Inverser les Y")]
+        FlipY,
+
+        [Description("Inverser les 2 axes")]
+        FlipBoth
     }
 }

@@ -1,6 +1,5 @@
 ﻿using KayoEditor;
 using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -26,7 +25,7 @@ namespace KayoEditorGUI
             if (image != null)
             {
                 WriteableBitmap writeableBitmap = new WriteableBitmap(image.Width, image.Height, 96, 96, PixelFormats.Bgr24, null);
-                writeableBitmap.WritePixels(new Int32Rect(0, 0, image.Width, image.Height), image.RawPixels.ToArray(), image.Stride, 0, 0);
+                writeableBitmap.WritePixels(new Int32Rect(0, 0, image.Width, image.Height), image.RawPixels, image.Stride, 0, 0);
 
                 screenImage.Source = writeableBitmap;
                 
