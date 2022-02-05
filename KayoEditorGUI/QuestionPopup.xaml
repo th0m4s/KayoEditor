@@ -19,9 +19,9 @@
 
             <Grid Name="Contents" Margin="0,22,0,0">
                 <TextBlock HorizontalAlignment="Left" Height="Auto" Width="Auto" TextWrapping="Wrap"
-                           Name="QuestionContent" Text="" TextAlignment="Center" Margin="5,2,5,63" Foreground="White" />
+                           Name="QuestionContent" Text="" TextAlignment="Center" Margin="5,2,5,60" Foreground="White" />
 
-                <Grid Margin="5,0,5,35" Height="25" VerticalAlignment="Bottom">
+                <Grid Margin="5,0,5,35" Height="22" VerticalAlignment="Bottom">
                     <TextBox Name="Input_Text" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" Visibility="Collapsed" />
                     <ComboBox Name="Input_ComboBox" Visibility="Collapsed" />
                 </Grid>

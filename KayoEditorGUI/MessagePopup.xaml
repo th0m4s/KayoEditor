@@ -13,8 +13,8 @@
     <Border BorderThickness="1" BorderBrush="#202225">
         <Grid Name="EntireWindow" MinHeight="100" MinWidth="250" Height="Auto" Width="Auto">
             <Grid Name="TopBar" VerticalAlignment="Top" Background="#202225" MouseDown="TopBar_MouseDown" Height="22">
-                <TextBlock HorizontalAlignment="Left" Margin="6,2,0,0" Foreground="White" Width="115" Height="16"
-                           VerticalAlignment="Top">Kayo Editor Message</TextBlock>
+                <TextBlock HorizontalAlignment="Left" Margin="6,2,0,0" Foreground="White" Width="65" Height="16"
+                           VerticalAlignment="Top">Kayo Editor</TextBlock>
             </Grid>
             <Grid Name="Contents" Margin="0,22,0,0">
                 <TextBlock HorizontalAlignment="Center" Height="Auto" Width="Auto" TextWrapping="Wrap" VerticalAlignment="Top"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -12,6 +13,8 @@ namespace KayoEditorGUI
     public partial class QuestionPopup : Window
     {
         AllowedTextType allowedTextType = AllowedTextType.Text;
+        Regex customRegex = null;
+
         bool confirmed = false;
 
         public bool Confirmed => confirmed;
@@ -25,11 +28,37 @@ namespace KayoEditorGUI
 
         public T AskEnum<T>() where T : Enum {
             Input_ComboBox.Visibility = Visibility.Visible;
-            Input_ComboBox.ItemsSource = Enum.GetValues(typeof(T));
+
+            T[] values = (T[])Enum.GetValues(typeof(T));
+            Input_ComboBox.ItemsSource = values.Select((T x) => new Item<T>
+            {
+                Value = x,
+                Display = x.GetDescription()
+            });
 
             ShowDialog();
 
-            return (T)Input_ComboBox.SelectedItem;
+            object item = Input_ComboBox.SelectedItem;
+            if (item == null) return values[0];
+
+            return ((Item<T>)item).Value;
+        }
+
+        public T AskValue<T>(T[] values, string[] display = null)
+        {
+            Input_ComboBox.Visibility = Visibility.Visible;
+            Input_ComboBox.ItemsSource = values.Select((T x, int i) => new Item<T>
+            {
+                Value = x,
+                Display = display != null && display.Length > i ? display[i] : x.ToString()
+            });
+
+            ShowDialog();
+
+            object item = Input_ComboBox.SelectedItem;
+            if (item == null) return values[0];
+
+            return ((Item<T>)item).Value;
         }
 
         private void ShowTextInput()
@@ -37,10 +66,16 @@ namespace KayoEditorGUI
             Input_Text.Visibility = Visibility.Visible;
         }
 
-        public string AskText()
+        public string AskText(Regex customRegex = null)
         {
             ShowTextInput();
+
             allowedTextType = AllowedTextType.Text;
+            if (customRegex != null)
+            {
+                allowedTextType = AllowedTextType.Custom;
+                this.customRegex = customRegex;
+            }
 
             ShowDialog();
 
@@ -55,6 +90,8 @@ namespace KayoEditorGUI
             ShowDialog();
 
             string val = Input_Text.Text;
+            if (val == "") return 0;
+
             string separator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             if (separator == ".") val = val.Replace(',', '.');
             else if (separator == ",") val = val.Replace('.', ',');
@@ -69,11 +106,15 @@ namespace KayoEditorGUI
 
             ShowDialog();
 
-            return int.Parse(Input_Text.Text);
+            string val = Input_Text.Text;
+            if (val == "") return 0;
+
+            return int.Parse(val);
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            Input_Text.MaxWidth = ActualWidth - 10;
             e.Handled = !IsTextAllowed(Input_Text.Text + e.Text);
         }
 
@@ -110,6 +151,8 @@ namespace KayoEditorGUI
                     return regexPositiveFloat.IsMatch(text);
                 case AllowedTextType.PositiveInt:
                     return regexPositiveInt.IsMatch(text);
+                case AllowedTextType.Custom:
+                    return customRegex.IsMatch(text);
                 default:
                     return true;
             }
@@ -117,7 +160,7 @@ namespace KayoEditorGUI
 
         public enum AllowedTextType
         {
-            Text, Float, Int, PositiveFloat, PositiveInt
+            Text, Float, Int, PositiveFloat, PositiveInt, Custom
         }
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e)
@@ -135,6 +178,17 @@ namespace KayoEditorGUI
         private void TopBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private struct Item<T>
+        {
+            public T Value;
+            public string Display;
+
+            public override string ToString()
+            {
+                return Display;
+            }
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using KayoEditor;
 using Microsoft.Win32;
 
@@ -143,13 +141,7 @@ namespace KayoEditorGUI
                     if(loadedImage == null || MessagePopup.Show("Une image est déjà ouverte dans Kayo Editor !\nVoulez-vous charger cette nouvelle image ?", true, true) 
                         == MessagePopup.MessageResult.Continue)
                     {
-                        loadedImage = loadingImage;
-                        resultImage = loadedImage.Copy();
-
-                        ShowScreen_Editor();
-
-                        loadedImageDisplay.UpdateImage(loadedImage);
-                        resultImageDisplay.UpdateImage(resultImage);
+                        LoadImage(loadingImage);
                     }
                 } catch(Exception e)
                 {
@@ -159,6 +151,17 @@ namespace KayoEditorGUI
             {
                 MessagePopup.Show("Ce fichier n'existe pas !");
             }
+        }
+
+        private void LoadImage(ImagePSI image)
+        {
+            loadedImage = image;
+            resultImage = loadedImage.Copy();
+
+            ShowScreen_Editor();
+
+            loadedImageDisplay.UpdateImage(loadedImage);
+            resultImageDisplay.UpdateImage(resultImage);
         }
 
         private void OpenSaveImage()
@@ -267,8 +270,14 @@ namespace KayoEditorGUI
 
         private void TransformRotate_Click(object sender, RoutedEventArgs e)
         {
-            // ...
-            resultImageDisplay.UpdateImage(resultImage);
+            QuestionPopup popup = new QuestionPopup("Angle (en degrés) :");
+
+            int angle = popup.AskValue(new int[] { 90, 180, 270 }, new string[] { "90°", "180°", "270°" });
+            if(popup.Confirmed)
+            {
+                MessagePopup.Show("angle " + angle);
+                resultImageDisplay.UpdateImage(resultImage);
+            }
         }
 
         private void TransformFlip_Click(object sender, RoutedEventArgs e)
@@ -303,6 +312,23 @@ namespace KayoEditorGUI
         {
             resultImage = loadedImage.Copy();
             resultImageDisplay.UpdateImage(resultImage);
+        }
+
+        private void CreateQRC_Clicked(object sender, RoutedEventArgs e)
+        {
+            QuestionPopup popup = new QuestionPopup("Message (47 caractères alphanumériques max.) :");
+            string message = popup.AskText(QRCodeGenerator.ExtendedRegex).ToUpper();
+
+            if(popup.Confirmed)
+            {
+                try
+                {
+                    LoadImage(QRCodeGenerator.GenerateQRCode(message));
+                } catch(Exception exception)
+                {
+                    MessagePopup.Show("Impossible de générer le QR code : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
         }
     }
 }

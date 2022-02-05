@@ -47,15 +47,24 @@
                 </Grid>
             </Grid>
             <Grid Name="Contents" Background="Transparent" Margin="0,22,0,0" AllowDrop="True" Drop="Contents_Drop">
-                <Grid Name="Grid_WelcomeScreen" Visibility="Collapsed">
-                    <TextBlock HorizontalAlignment="Center" Text="Kayo Editor" TextWrapping="Wrap" VerticalAlignment="Top"
-                               Foreground="White" FontSize="50" Margin="0,100,0,0" />
+                <Grid Name="Grid_WelcomeScreen" Visibility="Visible">
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top"
+                               Foreground="White" FontSize="50" Margin="0,100,0,0">Kayo Editor</TextBlock>
                     <TextBlock HorizontalAlignment="Center" Text="Créé par Thomas BULLIMORE et Thomas LEDOS" TextWrapping="Wrap"
                                VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="0,170,0,0" />
-                    <Button Content="Ouvrir une image..." HorizontalAlignment="Center" Margin="-140,210,0,0" VerticalAlignment="Top"
+                    
+                    <UniformGrid Columns="3" VerticalAlignment="Top" HorizontalAlignment="Center" Width="410" Margin="50,210,50,0">
+                        <Button Content="Ouvrir une image..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="OpenImage_Button" Click="OpenImage_Clicked" />
-                    <Button Content="Créer un QR code..." HorizontalAlignment="Center" Margin="140,210,0,0" VerticalAlignment="Top"
-                            Padding="3" Width="130" Name="CreateQRC_Button" IsEnabled="False" />
+                        <Button Content="Créer un QR code..." HorizontalAlignment="Center" VerticalAlignment="Top"
+                            Padding="3" Width="130" Name="CreateQRC_Button" Click="CreateQRC_Clicked" />
+                        <Button Content="Créer une fractale..." HorizontalAlignment="Center" VerticalAlignment="Top"
+                            Padding="3" Width="130" Name="CreateFractal_Button" IsEnabled="False" />
+                    </UniformGrid>
+                    
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Width="350" TextAlignment="Center"
+                               Margin="50,240,50,50" TextWrapping="Wrap">Pour lire un QR code, cacher une image ou générer
+                        un histogramme, ouvrir l'image puis choisir <Italic>Plus d'options...</Italic></TextBlock>
 
                 </Grid>
                 <Grid Name="Grid_EditorScreen" Visibility="Visible">
