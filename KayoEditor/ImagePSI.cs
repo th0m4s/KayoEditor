@@ -155,6 +155,12 @@ namespace KayoEditor
             int newWidth = (int)(Width * scale);
             int newHeight = (int)(Height * scale);
 
+            if (newWidth == 0)
+                newWidth = 1;
+
+            if (newHeight == 0)
+                newHeight = 1;
+
             ImagePSI result = new ImagePSI(newWidth, newHeight);
 
             for(int x = 0; x < newWidth; x++)
