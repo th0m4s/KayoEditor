@@ -7,14 +7,14 @@
         mc:Ignorable="d"
         WindowStyle="None"
         StateChanged="Window_StateChanged"
-        Title="Kayo Editor GUI" MinWidth="720" MinHeight="420" Width="720" Height="420" Background="#36393F">
+        Title="Kayo Editor GUI" MinWidth="720" MinHeight="500" Width="720" Height="500" Background="#36393F">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
     </WindowChrome.WindowChrome>
 
     <Border Name="MainWindowBorder" BorderThickness="0" BorderBrush="Transparent">
-        <Grid Name="EntireWindow" MinHeight="420" MinWidth="720">
+        <Grid Name="EntireWindow" MinHeight="500" MinWidth="720">
             <Grid Name="TopBar" VerticalAlignment="Top" Background="#202225" MouseDown="TopBar_MouseDown">
                 <TextBlock HorizontalAlignment="Left" Margin="6,2,0,0" Foreground="White" Width="100" Height="16"
                            VerticalAlignment="Top">Kayo Editor GUI</TextBlock>
@@ -47,7 +47,7 @@
                 </Grid>
             </Grid>
             <Grid Name="Contents" Background="Transparent" Margin="0,22,0,0" AllowDrop="True" Drop="Contents_Drop">
-                <Grid Name="Grid_WelcomeScreen" Visibility="Visible">
+                <Grid Name="Grid_WelcomeScreen" Visibility="Collapsed">
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top"
                                Foreground="White" FontSize="50" Margin="0,100,0,0">Kayo Editor</TextBlock>
                     <TextBlock HorizontalAlignment="Center" Text="Créé par Thomas BULLIMORE et Thomas LEDOS" TextWrapping="Wrap"
@@ -75,45 +75,26 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="2" />
-                        <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="1" Grid.RowSpan="2" BorderBrush="#202225" 
-                        BorderThickness="2,0,0,0" />
-                    <Border Grid.Row="1"  Grid.ColumnSpan="3" BorderBrush="#202225" 
+                    <Border Grid.Row="1"  Grid.ColumnSpan="1" BorderBrush="#202225" 
                         BorderThickness="0,0,0,2" />
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"
-                               FontSize="20" Margin="10,0,0,0">
-                        Image source :
-                    </TextBlock>
-                    <Button Content="Ouvrir un autre fichier" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
-                            VerticalAlignment="Center" Padding="6,3" Margin="0,2,8,0" Click="OpenImage_Clicked" />
-                    
-                    <Image Name="LoadedImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="0" Grid.Row="1" 
-                           VerticalAlignment="Center" Width="Auto" RenderTransformOrigin="0.5,0.5" Margin="10,10,10,25">
-                        <Image.RenderTransform>
-                            <RotateTransform Angle="180"/>
-                        </Image.RenderTransform>
-                    </Image>
-                    <TextBlock Name="LoadedImageDetails" Foreground="White" Grid.Row="1" Grid.Column="0"
-                               HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5" />
+                    <Button Content="Ouvrir un autre fichier" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"
+                            VerticalAlignment="Center" Padding="6,3" Margin="8,2,0,0" Click="OpenImage_Clicked" />
 
-                    <TextBlock Grid.Row="0" Grid.Column="2" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"
-                               FontSize="20" Margin="10,0,0,0">
-                        Image résultat :
-                    </TextBlock>
-                    <Button Name="SaveImageButton" Content="Sauvegarder le résultat" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right"
+                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               FontSize="20" Margin="0,0,0,0" Name="OpenedImageName" />
+                    <Button Name="SaveImageButton" Content="Sauvegarder le résultat" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
                             VerticalAlignment="Center" Padding="6,3" Margin="0,2,8,0" Click="SaveImage_Click" />
 
-                    <Image Name="ResultImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="2" Grid.Row="1"
+                    <Image Name="ResultImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="0" Grid.Row="1"
                            VerticalAlignment="Center" Width="Auto" RenderTransformOrigin="0.5,0.5" Margin="10,10,10,25">
                         <Image.RenderTransform>
                             <RotateTransform Angle="180"/>
                         </Image.RenderTransform>
                     </Image>
-                    <TextBlock Name="ResultImageDetails" Foreground="White" Grid.Row="1" Grid.Column="2"
+                    <TextBlock Name="ResultImageDetails" Foreground="White" Grid.Row="1" Grid.Column="0"
                                HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5" />
 
                     <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center">

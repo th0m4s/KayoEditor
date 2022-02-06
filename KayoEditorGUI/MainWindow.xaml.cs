@@ -15,8 +15,6 @@ namespace KayoEditorGUI
     public partial class MainWindow : Window
     {
         ImagePSI loadedImage = null;
-        DisplayedImagePSI loadedImageDisplay = null;
-
         ImagePSI resultImage = null;
         DisplayedImagePSI resultImageDisplay = null;
 
@@ -27,7 +25,6 @@ namespace KayoEditorGUI
             MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             ShowScreen_Welcome();
 
-            loadedImageDisplay = new DisplayedImagePSI(LoadedImage, LoadedImageDetails);
             resultImageDisplay = new DisplayedImagePSI(ResultImage, ResultImageDetails);
         }
 
@@ -141,7 +138,7 @@ namespace KayoEditorGUI
                     if(loadedImage == null || MessagePopup.Show("Une image est déjà ouverte dans Kayo Editor !\nVoulez-vous charger cette nouvelle image ?", true, true) 
                         == MessagePopup.MessageResult.Continue)
                     {
-                        LoadImage(loadingImage);
+                        LoadImage(loadingImage, Path.GetFileName(filename));
                     }
                 } catch(Exception e)
                 {
@@ -153,15 +150,15 @@ namespace KayoEditorGUI
             }
         }
 
-        private void LoadImage(ImagePSI image)
+        private void LoadImage(ImagePSI image, string name = "Nouvelle image")
         {
             loadedImage = image;
             resultImage = loadedImage.Copy();
 
             ShowScreen_Editor();
 
-            loadedImageDisplay.UpdateImage(loadedImage);
             resultImageDisplay.UpdateImage(resultImage);
+            OpenedImageName.Text = name;
         }
 
         private void OpenSaveImage()
@@ -201,7 +198,6 @@ namespace KayoEditorGUI
             loadedImage = null;
             resultImage = null;
 
-            LoadedImage.Source = null;
             ResultImage.Source = null;
 
             GC.Collect();
