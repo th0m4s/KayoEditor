@@ -116,12 +116,19 @@ namespace KayoEditorGUI
             }
         }
 
-        private void OpenLoadImage()
+        private OpenFileDialog GetOpenDialog()
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Title = "Ouvrir un fichier bitmap 24-bit...";
+            dialog.Title = "Ouvrir un fichier bitmap 24 bits...";
             dialog.DefaultExt = ".bmp";
             dialog.Filter = "Image Bitmap|*.bmp";
+
+            return dialog;
+        }
+
+        private void OpenLoadImage()
+        {
+            OpenFileDialog dialog = GetOpenDialog();
 
             if (dialog.ShowDialog() == true)
                 LoadImage(dialog.FileName);
@@ -332,7 +339,23 @@ namespace KayoEditorGUI
 
         private void TransformKernel_Click(object sender, RoutedEventArgs e)
         {
+            QuestionPopup popup = new QuestionPopup("Filtre à appliquer :");
 
+            Convolution.Kernel kernel = popup.AskEnum<Convolution.Kernel>();
+            if(popup.Confirmed)
+            {
+                Convolution.KernelOrigin kernelOrigin = Convolution.KernelOrigin.Center;
+                Convolution.EdgeProcessing edgeProcessing = Convolution.EdgeProcessing.Extend;
+
+                try
+                {
+                    resultImage = resultImage.ApplyKernel(kernel, kernelOrigin, edgeProcessing);
+                    resultImageDisplay.UpdateImage(resultImage);
+                } catch(Exception exception)
+                {
+                    MessagePopup.Show("Impossible d'appliquer le filtre : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
         }
 
         private void TransformReadQR_Click(object sender, RoutedEventArgs e)
@@ -347,12 +370,25 @@ namespace KayoEditorGUI
 
         private void TransformEncode_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog dialog = GetOpenDialog();
+            dialog.Title = "Choisir un fichier bitmap 24 bits à cacher...";
 
+            if(dialog.ShowDialog() == true)
+            {
+                try
+                {
+                    ImagePSI imageToHide = new ImagePSI(dialog.FileName);
+                } catch(Exception exception)
+                {
+                    MessagePopup.Show("Impossible de cacher l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
         }
 
         private void TransformDecode_Click(object sender, RoutedEventArgs e)
         {
-
+            resultImage = resultImage.GetHidden();
+            resultImageDisplay.UpdateImage(resultImage);
         }
     }
 }

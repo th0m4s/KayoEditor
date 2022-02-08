@@ -175,6 +175,22 @@ namespace KayoEditor
             return result;
         }
 
+        public ImagePSI GetHidden()
+        {
+            ImagePSI result = this.Copy();
+
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = this[x, y];
+                    result[x, y] = new Pixel((byte)(pixel.R << 4), (byte)(pixel.G << 4), (byte)(pixel.B << 4));
+                }
+            }
+
+            return result;
+        }
+
         public ImagePSI Scale(float scale)
         {
             if (scale == 0)
