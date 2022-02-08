@@ -144,6 +144,24 @@ namespace KayoEditor
             return result;
         }
 
+        public ImagePSI Negative()
+        {
+            ImagePSI result = this.Copy();
+
+            for(int x = 0; x < Width; x++)
+            {
+                for(int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = this[x, y];
+                    result[x, y] = new Pixel((byte)(255 - pixel.R), (byte)(255 - pixel.G), (byte)(255 - pixel.B));
+                }
+            }
+
+            return result;
+        }
+
+
+
         public ImagePSI Scale(float scale)
         {
             if (scale == 0)
