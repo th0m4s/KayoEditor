@@ -268,12 +268,8 @@ namespace KayoEditorGUI
         {
             QuestionPopup popup = new QuestionPopup("Angle (en degrés) :");
 
-            int angle = popup.AskValue(new int[] { 90, 180, 270 }, new string[] { "90°", "180°", "270°" });
-            if(popup.Confirmed)
-            {
-                MessagePopup.Show("angle " + angle);
-                resultImageDisplay.UpdateImage(resultImage);
-            }
+            int angle = popup.AskInt();
+            MessagePopup.Show("angle" + angle);
         }
 
         private void TransformFlip_Click(object sender, RoutedEventArgs e)
@@ -330,7 +326,8 @@ namespace KayoEditorGUI
 
         private void TransformInvert_Click(object sender, RoutedEventArgs e)
         {
-
+            resultImage = resultImage.Invert();
+            resultImageDisplay.UpdateImage(resultImage);
         }
 
         private void TransformKernel_Click(object sender, RoutedEventArgs e)

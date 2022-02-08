@@ -5,22 +5,22 @@ using System.Text;
 
 namespace KayoEditor
 {
-    public class ImagePSI
+    public class ImagePSI                               // en hexadécimal
     {
-        public const int OFFSET_TYPE = 0x00;
-        public const int OFFSET_FILESIZE = 0x02;
-        public const int OFFSET_STARTOFFSET = 0x0a;
+        public const int OFFSET_TYPE = 0x00;            // type de l'image
+        public const int OFFSET_FILESIZE = 0x02;        // taille totale du fichier (en octets)
+        public const int OFFSET_STARTOFFSET = 0x0a;     // position du premier pixel dans le fichier (en octets)
 
-        public const int OFFSET_INFOHEADERSIZE = 0x0e;
-        public const int OFFSET_WIDTH = 0x12;
-        public const int OFFSET_HEIGHT = 0x16;
-        public const int OFFSET_COLORPLANES = 0x1a;
-        public const int OFFSET_COLORDEPTH = 0x1c;
+        public const int OFFSET_INFOHEADERSIZE = 0x0e;  // taille de la deuxième partie de l'entête
+        public const int OFFSET_WIDTH = 0x12;           // largeur de l'image en pixels
+        public const int OFFSET_HEIGHT = 0x16;          // hauteur de l'image en pixels
+        public const int OFFSET_COLORPLANES = 0x1a;     // vaudra toujours 1 pour un bitmap
+        public const int OFFSET_COLORDEPTH = 0x1c;      // nombre de bits par pixel (souvent 24 car 3 octets * 8 bits = 24)
 
-        byte[] rawHeader;
-        byte[] rawPixels;
+        byte[] rawHeader;                               // création du tableau de bytes/octets du header
+        byte[] rawPixels;                               // création du tableau de bytes/octets de l'image
 
-        public string Type => Encoding.ASCII.GetString(rawHeader.ExtractBytes(2, OFFSET_TYPE));
+        public string Type => Encoding.ASCII.GetString(rawHeader.ExtractBytes(2, OFFSET_TYPE));     // Encoding.ASCII.GetString est une méthode permettant de transformer un tableau d'octets en string
         public uint FileSize => Utils.LittleEndianToUInt(rawHeader, OFFSET_FILESIZE);
         public uint StartOffset => Utils.LittleEndianToUInt(rawHeader, OFFSET_STARTOFFSET);
 
@@ -29,7 +29,7 @@ namespace KayoEditor
         public int Height => Utils.LittleEndianToInt(rawHeader, OFFSET_HEIGHT);
         public ushort ColorPlanes => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORPLANES);
         public ushort ColorDepth => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORDEPTH);
-        public int Stride => (Width * ColorDepth / 8 + 3) / 4 * 4; // by dividing then multiplying, we floor to the nearest integer
+        public int Stride => (Width * ColorDepth / 8 + 3) / 4 * 4; // by dividing then multiplying, we floor to the nearest smallest integer
 
         /*public ReadOnlyCollection<byte> RawHeader => Array.AsReadOnly(rawHeader);
         public ReadOnlyCollection<byte> RawPixels => Array.AsReadOnly(rawPixels);*/
@@ -39,17 +39,17 @@ namespace KayoEditor
 
         public ImagePSI(string filename)
         {
-            using (FileStream stream = File.OpenRead(filename))
+            using (FileStream stream = File.OpenRead(filename))     // appelle stream.Close() automatiquement
             {
                 rawHeader = stream.ReadBytes(54);
 
                 if (Type != "BM")
                     throw new FormatException("invalid magic file type!");
 
-                if (ColorDepth != 24)
-                    throw new FormatException("KayoEditor can only load images of depth 24-bit");
+                if (ColorDepth != 24)   
+                    throw new FormatException("KayoEditor can only load images with a depth of 24 bits");
 
-                rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));
+                rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));    // principe de stream : ne peut lire qu'une seule fois chaque octet (donc à la position 54 à ce moment là)
             }
         }
 
@@ -57,9 +57,8 @@ namespace KayoEditor
         {
             rawHeader = new byte[54];
 
-            rawHeader.InsertBytes(Encoding.ASCII.GetBytes("BM"), OFFSET_TYPE);
+            rawHeader.InsertBytes(Encoding.ASCII.GetBytes("BM"), OFFSET_TYPE);      // Encoding.ASCII.GetBytes est une méthode permettant de transformer un string en tableau octets
             rawHeader.InsertBytes(Utils.UIntToLittleEndian((uint)rawHeader.Length), OFFSET_STARTOFFSET);
-
 
             rawHeader.InsertBytes(Utils.UShortToLittleEndian(0x28), OFFSET_INFOHEADERSIZE);
             rawHeader.InsertBytes(Utils.IntToLittleEndian(width), OFFSET_WIDTH);
@@ -75,7 +74,7 @@ namespace KayoEditor
         public ImagePSI(ImagePSI original)
         {
             rawHeader = new byte[original.rawHeader.Length];
-            Array.Copy(original.rawHeader, rawHeader, rawHeader.Length);
+            Array.Copy(original.rawHeader, rawHeader, rawHeader.Length);        // Array.Copy agit comme une boucle for afin de copier le tableau
 
             rawPixels = new byte[original.rawPixels.Length];
             Array.Copy(original.rawPixels, rawPixels, rawPixels.Length);
@@ -86,9 +85,9 @@ namespace KayoEditor
             return new ImagePSI(this);
         }
 
-        private int _position(int x, int y) => x * 3 + (Height - y - 1) * Stride;
-        public Pixel this[int x, int y] // la propriété c'est l'instance elle-même
-        { // instance[x, y] <=> instance._pixels[y, x]
+        private int _position(int x, int y) => x * 3 + (Height - y - 1) * Stride;           // position du premier octet décrivant ce pixel
+        public Pixel this[int x, int y] // la propriété c'est l'instance elle-même      similaire à static bool operator ==(...)
+        { // imageOriginale[x, y] <=> imageOriginale._pixels[y, x]
             get
             {
                 int position = _position(x, y);
@@ -159,8 +158,22 @@ namespace KayoEditor
 
             return result;
         }
+        
+        public ImagePSI Invert()
+        {
+            ImagePSI result = this.Copy();
+            
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = this[x, y];
+                    result[x, y] = new Pixel(pixel.B, pixel.G, pixel.R);
+                }
+            }
 
-
+            return result;
+        }
 
         public ImagePSI Scale(float scale)
         {
@@ -185,7 +198,7 @@ namespace KayoEditor
             {
                 for(int y = 0; y < newHeight; y++)
                 {
-                    result[x, y] = new Pixel(this[(int)(x / scale), (int)(y / scale)]);
+                    result[x, y] = new Pixel(this[(int)(x / scale), (int)(y / scale)]);     // 1/2 = 0 ; 3/2 = 1
                 }
             }
 
