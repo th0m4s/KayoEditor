@@ -4,7 +4,7 @@ namespace KayoEditor
 {
     public static class Extensions
     {
-        public static byte[] ReadBytes(this FileStream stream, int length)
+        public static byte[] ReadBytes(this FileStream stream, int length) // ReadBytes(stream, 3) <=> stream.ReadBytes(3)
         {
             byte[] array = new byte[length];
             for (int i = 0; i < length; i++)
@@ -32,7 +32,7 @@ namespace KayoEditor
 
             for (int i = 0; i < length; i++)
             {
-                array[offsetTo + i] = data[i + offsetFrom];
+                array[offsetTo + i] = data[offsetFrom + i];
             }
         }
     }
