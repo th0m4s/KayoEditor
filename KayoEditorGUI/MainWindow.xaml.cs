@@ -294,11 +294,6 @@ namespace KayoEditorGUI
             }
         }
 
-        private void MoreTransforms_Click(object sender, RoutedEventArgs e)
-        {
-            // ...
-        }
-
         private void BackMenu_Click(object sender, RoutedEventArgs e)
         {
             ShowScreen_Welcome();
@@ -325,6 +320,42 @@ namespace KayoEditorGUI
                     MessagePopup.Show("Impossible de générer le QR code : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
                 }
             }
+        }
+
+        private void TransformNegative_Click(object sender, RoutedEventArgs e)
+        {
+            resultImage = resultImage.Negative();
+            resultImageDisplay.UpdateImage(resultImage);
+        }
+
+        private void TransformInvert_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformKernel_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformReadQR_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformHisto_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformEncode_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TransformDecode_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

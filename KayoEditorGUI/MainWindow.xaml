@@ -52,7 +52,7 @@
                                Foreground="White" FontSize="50" Margin="0,100,0,0">Kayo Editor</TextBlock>
                     <TextBlock HorizontalAlignment="Center" Text="Créé par Thomas BULLIMORE et Thomas LEDOS" TextWrapping="Wrap"
                                VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="0,170,0,0" />
-                    
+
                     <UniformGrid Columns="3" VerticalAlignment="Top" HorizontalAlignment="Center" Width="410" Margin="50,210,50,0">
                         <Button Content="Ouvrir une image..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="OpenImage_Button" Click="OpenImage_Clicked" />
@@ -61,10 +61,10 @@
                         <Button Content="Créer une fractale..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="CreateFractal_Button" IsEnabled="False" />
                     </UniformGrid>
-                    
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Width="350" TextAlignment="Center"
+
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Width="380" TextAlignment="Center"
                                Margin="50,240,50,50" TextWrapping="Wrap">Pour lire un QR code, cacher une image ou générer
-                        un histogramme, ouvrir l'image puis choisir <Italic>Plus d'options...</Italic></TextBlock>
+                        un histogramme, ouvrir l'image puis choisir l'option dans le menu de gauche.</TextBlock>
 
                 </Grid>
                 <Grid Name="Grid_EditorScreen" Visibility="Visible">
@@ -74,45 +74,63 @@
                         <RowDefinition Height="40" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Row="1"  Grid.ColumnSpan="1" BorderBrush="#202225" 
-                        BorderThickness="0,0,0,2" />
+                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="#202225" BorderThickness="0,0,0,2" />
 
-                    <Button Content="Ouvrir un autre fichier" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"
-                            VerticalAlignment="Center" Padding="6,3" Margin="8,2,0,0" Click="OpenImage_Clicked" />
+                    <Border Grid.Row="0" Grid.RowSpan="3" BorderThickness="0,0,2,0" HorizontalAlignment="Right"
+                            BorderBrush="#202225"/>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    <TextBlock Grid.Row="0" Grid.Column="1" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
                                FontSize="20" Margin="0,0,0,0" Name="OpenedImageName" />
-                    <Button Name="SaveImageButton" Content="Sauvegarder le résultat" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right"
-                            VerticalAlignment="Center" Padding="6,3" Margin="0,2,8,0" Click="SaveImage_Click" />
 
-                    <Image Name="ResultImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="0" Grid.Row="1"
+                    <Image Name="ResultImage" HorizontalAlignment="Center" Height="Auto" Grid.Column="1" Grid.Row="1"
                            VerticalAlignment="Center" Width="Auto" RenderTransformOrigin="0.5,0.5" Margin="10,10,10,25">
                         <Image.RenderTransform>
                             <RotateTransform Angle="180"/>
                         </Image.RenderTransform>
                     </Image>
-                    <TextBlock Name="ResultImageDetails" Foreground="White" Grid.Row="1" Grid.Column="0"
+                    <TextBlock Name="ResultImageDetails" Foreground="White" Grid.Row="1" Grid.Column="1"
                                HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5" />
 
-                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Vertical" Grid.RowSpan="2" VerticalAlignment="Top" Margin="10,7,10,0">
                         <StackPanel.Resources>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Margin" Value="3,0"/>
+                                <Setter Property="Margin" Value="0,3"/>
                                 <Setter Property="Padding" Value="6,3" />
                             </Style>
                         </StackPanel.Resources>
-                        
+
                         <Button Name="TransformGreyscaleButton" Click="TransformGreyscale_Click" Content="Nuances de gris" />
                         <Button Name="TransformBlackWhiteButton" Click="TransformBlackWhite_Click" Content="Noir et blanc" />
                         <Button Name="TransformScaleButton" Click="TransformScale_Click" Content="Agrandir/Rétrécir" />
                         <Button Name="TransformRotateButton" Click="TransformRotate_Click" Content="Pivoter" />
                         <Button Name="TransformFlipButton" Click="TransformFlip_Click" Content="Miroir" />
-                        <Button Name="MoreTransformsButton" Click="MoreTransforms_Click" Content="Plus d'options" />
-                        <Button Name="BackMenuButton" Click="BackMenu_Click" Content="Retour au menu" Margin="20,0,3,0" />
+                        <Button Name="TransformNegativeButton" Click="TransformNegative_Click" Content="Négatif" />
+                        <Button Name="TransformKernelButton" Click="TransformKernel_Click" Content="Appliquer un filtre" />
+                        <Button Name="TransformHistoButton" Click="TransformHisto_Click" Content="Histogramme" />
+                        <Button Name="TransformReadQRButton" Click="TransformReadQR_Click" Content="Lire un QR code" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="TransformEncodeButton" Click="TransformEncode_Click" Content="Coder" Margin="0,3,5,3" />
+                            <Button Name="TransformDecodeButton" Click="TransformDecode_Click" Content="Décoder" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.RowSpan="3" VerticalAlignment="Bottom" Margin="10,0,10,8">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Margin" Value="0,3"/>
+                                <Setter Property="Padding" Value="6,3" />
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <Button Content="Ouvrir..." VerticalAlignment="Center" Click="OpenImage_Clicked" />
+                        <Button Name="SaveImageButton" Content="Sauvegarder..." Margin="0,3,0,10" Click="SaveImage_Click" />
+
                         <Button Name="ResetButton" Click="Reset_Click" Content="Réinitialiser" />
+                        <Button Name="BackMenuButton" Click="BackMenu_Click" Content="Retour au menu" />
                     </StackPanel>
                 </Grid>
             </Grid>
