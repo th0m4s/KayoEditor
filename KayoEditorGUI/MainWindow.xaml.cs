@@ -18,6 +18,8 @@ namespace KayoEditorGUI
         ImagePSI resultImage = null;
         DisplayedImagePSI resultImageDisplay = null;
 
+        Pixel currentPaintColor = new Pixel(255, 0, 0);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -389,6 +391,18 @@ namespace KayoEditorGUI
         {
             resultImage = resultImage.GetHidden();
             resultImageDisplay.UpdateImage(resultImage);
+        }
+
+        private void PaintColorPreview_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ColorPicker picker = new ColorPicker(currentPaintColor);
+            Pixel pixel = picker.AskColor();
+
+            if(picker.Confirmed)
+            {
+                currentPaintColor = pixel;
+                PaintColorPreview.Fill = new SolidColorBrush(Color.FromRgb(pixel.R, pixel.G, pixel.B));
+            }
         }
     }
 }

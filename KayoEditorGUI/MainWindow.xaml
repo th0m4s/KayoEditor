@@ -132,6 +132,11 @@
                         <Button Name="ResetButton" Click="Reset_Click" Content="Réinitialiser" />
                         <Button Name="BackMenuButton" Click="BackMenu_Click" Content="Retour au menu" />
                     </StackPanel>
+
+                    <Grid Name="PaintToolsGrid" Grid.Row="2" Grid.Column="1" Margin="10,0,10,0">
+                        <Rectangle Name="PaintColorPreview" Height="25" Width="25" HorizontalAlignment="Left" Fill="Red"
+                                   MouseDown="PaintColorPreview_MouseDown" Cursor="Hand" />
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

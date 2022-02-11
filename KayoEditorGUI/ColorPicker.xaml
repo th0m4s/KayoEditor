@@ -1,0 +1,94 @@
+﻿<Window x:Class="KayoEditorGUI.ColorPicker"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KayoEditorGUI"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Loaded="Window_Loaded"
+        Title="Kayo Editor Message" SizeToContent="WidthAndHeight" Background="#36393F">
+
+    <Border BorderThickness="1" BorderBrush="#202225">
+        <Grid Name="EntireWindow" Height="180" Width="390">
+            <Grid Name="TopBar" VerticalAlignment="Top" Background="#202225" MouseDown="TopBar_MouseDown" Height="22">
+                <TextBlock HorizontalAlignment="Left" Margin="6,2,0,0" Foreground="White" Width="120" Height="16"
+                           VerticalAlignment="Top">Choisir une couleur...</TextBlock>
+            </Grid>
+            <Grid Name="Contents" Margin="0,22,0,0">
+                <Grid Name="ValueSaturationGrid" Margin="5,5,130,26">
+                    <Rectangle Fill="Black" />
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                <GradientStop Color="#FFFFFF" Offset="0" />
+                                <GradientStop Color="#FF0000" Offset="1" x:Name="SatValColor" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                        <Rectangle.OpacityMask>
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#FFFFFFFF" Offset="0" />
+                                <GradientStop Color="#00000000" Offset="1" />
+                            </LinearGradientBrush>
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Grid>
+                <Grid Name="HueGrid" Width="255" Height="15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" x:Name="HueGradient">
+                                <GradientStop Color="#FF0000" Offset="0" />
+                                <GradientStop Color="#FFFF00" Offset="0.16" />
+                                <GradientStop Color="#00FF00" Offset="0.33" />
+                                <GradientStop Color="#00FFFF" Offset="0.5" />
+                                <GradientStop Color="#0000FF" Offset="0.66" />
+                                <GradientStop Color="#FF00FF" Offset="0.83" />
+                                <GradientStop Color="#FF0000" Offset="1" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Grid>
+
+                <Border BorderThickness="1" BorderBrush="#DDDDDD" Margin="4,0,0,3" CornerRadius="1" Width="4" Height="19" Name="SliderHue" Cursor="Hand"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom" MouseDown="SliderHue_MouseDown" MouseUp="Window_MouseUp" MouseMove="Window_MouseMove">
+                    <Rectangle Fill="White" />
+                    <Border.RenderTransform>
+                        <TranslateTransform X="0" x:Name="TranslateSliderHue" />
+                    </Border.RenderTransform>
+                </Border>
+
+                <Border BorderThickness="1" BorderBrush="#DDDDDD" Margin="2,2,0,0" CornerRadius="1" Width="8" Height="8" Name="SliderSatVal" Cursor="Hand"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" MouseDown="SliderSatVal_MouseDown" MouseUp="Window_MouseUp" MouseMove="Window_MouseMove">
+                    <Rectangle Fill="White" />
+                    <Border.RenderTransform>
+                        <TranslateTransform X="0" Y="0" x:Name="TranslateSliderSatVal" />
+                    </Border.RenderTransform>
+                </Border>
+
+                <Rectangle Width="60" Height="30" Margin="0,6,65,0" HorizontalAlignment="Right" VerticalAlignment="Top" Fill="Black"
+                           Name="OriginalColorPreview"/>
+                <Rectangle Width="60" Height="30" Margin="0,6,5,0" HorizontalAlignment="Right" VerticalAlignment="Top" Fill="White"
+                           Name="NewColorPreview"/>
+
+                <Grid Name="Inputs" HorizontalAlignment="Right" Margin="0,45,5,5" Width="120">
+                    <TextBlock  Text="HEX" Foreground="White" FontSize="8" Margin="2,2,0,0" />
+                    <TextBox VerticalAlignment="Top" Margin="20,0,0,0" Height="15" Name="InputHex"
+                             PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" TextChanged="InputHex_TextChanged" />
+
+                    <TextBlock  Text="RGB" Foreground="White" FontSize="8" Margin="2,22,0,0" />
+                    <TextBox VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,20,0,0" Height="15" Width="30" Name="InputR"
+                             PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" TextChanged="InputRGB_TextChanged" />
+                    <TextBox VerticalAlignment="Top" HorizontalAlignment="Left" Margin="55,20,0,0" Height="15" Width="30" Name="InputG"
+                             PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" TextChanged="InputRGB_TextChanged" />
+                    <TextBox VerticalAlignment="Top" HorizontalAlignment="Left" Margin="90,20,0,0" Height="15" Width="30" Name="InputB"
+                             PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" TextChanged="InputRGB_TextChanged" />
+
+                    <Button Content="Annuler" VerticalAlignment="Bottom" Margin="0,0,0,25" Name="ButtonCancel" Click="ButtonCancel_Click" />
+                    <Button Content="Confirmer" VerticalAlignment="Bottom" Name="ButtonConfirm" Click="ButtonConfirm_Click" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
