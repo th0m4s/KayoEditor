@@ -208,13 +208,34 @@ namespace KayoEditor
             if (newHeight == 0)
                 newHeight = 1;
 
+            ImagePSI source = this.Copy();
+
+            if(scale < 1)
+            {
+                // si on réduit, on met dans les pixels en haut à gauche de chaque groupe la moyenne des pixels du groupe
+
+                int convolSize = (int)Math.Ceiling(1 / scale);
+                float[,] kernel = new float[convolSize, convolSize];
+                float coef = 1f / kernel.Length;
+
+                for(int y = 0; y < convolSize; y++)
+                {
+                    for(int x = 0; x < convolSize; x++)
+                    {
+                        kernel[y, x] = coef;
+                    }
+                }
+
+                source = source.ApplyKernel(kernel, Convolution.KernelOrigin.TopLeft, Convolution.EdgeProcessing.Extend);
+            }
+
             ImagePSI result = new ImagePSI(newWidth, newHeight);
 
-            for(int x = 0; x < newWidth; x++)
+            for (int x = 0; x < newWidth; x++)
             {
                 for(int y = 0; y < newHeight; y++)
                 {
-                    result[x, y] = new Pixel(this[(int)(x / scale), (int)(y / scale)]);     // 1/2 = 0 ; 3/2 = 1
+                    result[x, y] = new Pixel(source[(int)(x / scale), (int)(y / scale)]);     // 1/2 = 0 ; 3/2 = 1
                 }
             }
 
