@@ -367,7 +367,8 @@ namespace KayoEditorGUI
 
         private void TransformHisto_Click(object sender, RoutedEventArgs e)
         {
-
+            resultImage = resultImage.Histogram();
+            resultImageDisplay.UpdateImage(resultImage);
         }
 
         private void TransformEncode_Click(object sender, RoutedEventArgs e)
@@ -380,6 +381,8 @@ namespace KayoEditorGUI
                 try
                 {
                     ImagePSI imageToHide = new ImagePSI(dialog.FileName);
+                    resultImage = resultImage.HideImageInside(imageToHide);
+                    resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
                     MessagePopup.Show("Impossible de cacher l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
@@ -389,7 +392,7 @@ namespace KayoEditorGUI
 
         private void TransformDecode_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.GetHidden();
+            resultImage = resultImage.GetHiddenImage();
             resultImageDisplay.UpdateImage(resultImage);
         }
 

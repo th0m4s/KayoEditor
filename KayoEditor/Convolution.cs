@@ -144,7 +144,7 @@ namespace KayoEditor
                                     case EdgeProcessing.Mirror:
                                         if (pos_dy < 0)
                                         {
-                                            pos_dy = -pos_dy + 1;
+                                            pos_dy = -pos_dy;
                                         }
                                         else
                                         {
@@ -179,7 +179,7 @@ namespace KayoEditor
                                     case EdgeProcessing.Mirror:
                                         if (pos_dx < 0)
                                         {
-                                            pos_dx = -pos_dx + 1;
+                                            pos_dx = -pos_dx;
                                         }
                                         else
                                         {
@@ -228,7 +228,7 @@ namespace KayoEditor
         {
             [Description("Détection des contours 1")]
             EdgeDetection1,
-
+            
             [Description("Détection des contours 2")]
             EdgeDetection2,
 

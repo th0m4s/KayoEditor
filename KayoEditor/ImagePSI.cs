@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace KayoEditor
@@ -29,7 +30,7 @@ namespace KayoEditor
         public int Height => Utils.LittleEndianToInt(rawHeader, OFFSET_HEIGHT);
         public ushort ColorPlanes => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORPLANES);
         public ushort ColorDepth => Utils.LittleEndianToUShort(rawHeader, OFFSET_COLORDEPTH);
-        public int Stride => (Width * ColorDepth / 8 + 3) / 4 * 4; // by dividing then multiplying, we floor to the nearest smallest integer
+        public int Stride => (Width * ColorDepth / 8 + 3) / 4 * 4; // by dividing then multiplying, we floor to the nearest smallest integer, nombre d'octets pour décrire une ligne de pixels
 
         /*public ReadOnlyCollection<byte> RawHeader => Array.AsReadOnly(rawHeader);
         public ReadOnlyCollection<byte> RawPixels => Array.AsReadOnly(rawPixels);*/
@@ -60,7 +61,7 @@ namespace KayoEditor
             rawHeader.InsertBytes(Encoding.ASCII.GetBytes("BM"), OFFSET_TYPE);      // Encoding.ASCII.GetBytes est une méthode permettant de transformer un string en tableau octets
             rawHeader.InsertBytes(Utils.UIntToLittleEndian((uint)rawHeader.Length), OFFSET_STARTOFFSET);
 
-            rawHeader.InsertBytes(Utils.UShortToLittleEndian(0x28), OFFSET_INFOHEADERSIZE);
+            rawHeader.InsertBytes(Utils.UShortToLittleEndian(0x28), OFFSET_INFOHEADERSIZE); // hexadécimal car adresse
             rawHeader.InsertBytes(Utils.IntToLittleEndian(width), OFFSET_WIDTH);
             rawHeader.InsertBytes(Utils.IntToLittleEndian(height), OFFSET_HEIGHT);
             rawHeader.InsertBytes(Utils.UShortToLittleEndian(1), OFFSET_COLORPLANES);
@@ -120,7 +121,7 @@ namespace KayoEditor
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    result[x, y] = this[x, y].Greyscale;
+                    result[x, y] = this[x, y].Greyscale();
                 }
             }
 
@@ -135,8 +136,7 @@ namespace KayoEditor
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    Pixel pixel = this[x, y];
-                    result[x, y] = pixel.Greyscale.R > 127 ? new Pixel(255) : new Pixel(0);
+                    result[x, y] = this[x, y].Greyscale().R > 127 ? new Pixel(255) : new Pixel(0);
                 }
             }
 
@@ -175,7 +175,88 @@ namespace KayoEditor
             return result;
         }
 
-        public ImagePSI GetHidden()
+        public ImagePSI HideImageInside(ImagePSI imageToHide)
+        {
+            ImagePSI result = this.Copy();
+
+            if (this.Width < imageToHide.Width || this.Height < imageToHide.Height)
+            {
+                float scaleX = imageToHide.Width / this.Width;
+                float scaleY = imageToHide.Height / this.Height;
+
+                float scale = Math.Max(scaleX, scaleY);
+
+                result = result.Scale(scale);
+            }
+
+            for(int x = 0; x < result.Width; x++)
+            {
+                for (int y = 0; y < result.Height; y++)
+                {
+                    Pixel toHide = new Pixel();
+                    if(x < imageToHide.Width && y < imageToHide.Height)
+                    {
+                        toHide = imageToHide[x, y];
+                    }
+
+                    Pixel pixel = result[x, y];
+                    byte r = (byte)((pixel.R & 0b11110000) + ((toHide.R >> 4) & 0b00001111));
+                    byte g = (byte)((pixel.G & 0b11110000) + ((toHide.G >> 4) & 0b00001111));
+                    byte b = (byte)((pixel.B & 0b11110000) + ((toHide.B >> 4) & 0b00001111));
+
+                    result[x, y] = new Pixel(r, g, b);
+                }
+            }
+
+            return result;
+        }
+
+        public ImagePSI Histogram()
+        {
+            ImagePSI result = new ImagePSI(255, 100);
+
+            int[] r = new int[256];
+            int[] g = new int[256];
+            int[] b = new int[256];
+
+            for(int x = 0; x < Width; x++)
+            {
+                for(int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = this[x, y];
+                    r[pixel.R]++;
+                    g[pixel.G]++;
+                    b[pixel.B]++;
+                }
+            }
+
+            int max_r = r.Max();
+            int max_g = g.Max();
+            int max_b = b.Max();
+
+            int max = Math.Max(max_r, Math.Max(max_g, max_b));
+
+            int[] perc_r = new int[256];
+            int[] perc_g = g.Select(x => x * 100 / max).ToArray(); // sélect = boucle for pour chaque valeur du tableau
+            int[] perc_b = b.Select(x => x * 100 / max).ToArray();
+
+            for(int i = 0; i < 256; i++)
+            {
+                perc_r[i] = r[i] * 100 / max;
+            }
+
+            for (int x = 0; x < result.Width; x++)
+            {
+                for(int y = 0; y < result.Height; y++)
+                {
+                    result[x, 99 - y] = new Pixel((byte)(y < perc_r[x] * 2 ? 255 : 0), (byte)(y < perc_g[x] * 2 ? 255 : 0), (byte)(y < perc_b[x] * 2 ? 255 : 0));
+                }
+            }
+
+            return result;
+        }
+
+        public ImagePSI GetHiddenImage()
         {
             ImagePSI result = this.Copy();
 
@@ -216,7 +297,7 @@ namespace KayoEditor
 
                 int convolSize = (int)Math.Ceiling(1 / scale);
                 float[,] kernel = new float[convolSize, convolSize];
-                float coef = 1f / kernel.Length;
+                float coef = 1f / kernel.Length;    // 1f = 1 float
 
                 for(int y = 0; y < convolSize; y++)
                 {

@@ -10,7 +10,7 @@ namespace KayoEditor
         public byte G => g;
         public byte B => b;
 
-        public Pixel Greyscale => new Pixel((byte)((r + g + b) / 3));
+        public Pixel Greyscale() => new Pixel((byte)((r + g + b) / 3)); // m&thode en 1 ligne
 
         public Pixel(byte r, byte g, byte b)
         {
