@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -367,8 +368,24 @@ namespace KayoEditorGUI
 
         private void TransformHisto_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.Histogram();
-            resultImageDisplay.UpdateImage(resultImage);
+            QuestionPopup popup = new QuestionPopup("Quelle(s) couleur(s) utiliser pour l'histogramme ?");
+
+            HistogramChannel channel = popup.AskEnum<HistogramChannel>(0);
+            if(popup.Confirmed)
+            {
+                try
+                {
+                    bool r = channel == HistogramChannel.Red || channel == HistogramChannel.All;
+                    bool g = channel == HistogramChannel.Green || channel == HistogramChannel.All;
+                    bool b = channel == HistogramChannel.Blue || channel == HistogramChannel.All;
+
+                    resultImage = resultImage.Histogram(r, g, b);
+                    resultImageDisplay.UpdateImage(resultImage);
+                } catch(Exception exception)
+                {
+                    MessagePopup.Show("Impossible de calculer l'histogramme : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
         }
 
         private void TransformEncode_Click(object sender, RoutedEventArgs e)
@@ -407,5 +424,20 @@ namespace KayoEditorGUI
                 PaintColorPreview.Fill = new SolidColorBrush(Color.FromRgb(pixel.R, pixel.G, pixel.B));
             }
         }
+    }
+
+    public enum HistogramChannel
+    {
+        [Description("RGB (toutes)")]
+        All,
+
+        [Description("Rouge")]
+        Red,
+
+        [Description("Vert")]
+        Green,
+
+        [Description("Bleu")]
+        Blue,
     }
 }

@@ -211,7 +211,7 @@ namespace KayoEditor
             return result;
         }
 
-        public ImagePSI Histogram()
+        public ImagePSI Histogram(bool channel_r = true, bool channel_g = true, bool channel_b = true)
         {
             ImagePSI result = new ImagePSI(255, 100);
 
@@ -230,26 +230,29 @@ namespace KayoEditor
                 }
             }
 
-            int max_r = r.Max();
-            int max_g = g.Max();
-            int max_b = b.Max();
+            int max_r = channel_r ? r.Max() : 1;
+            int max_g = channel_g ? g.Max() : 1;
+            int max_b = channel_b ? b.Max() : 1;
 
             int max = Math.Max(max_r, Math.Max(max_g, max_b));
 
             int[] perc_r = new int[256];
-            int[] perc_g = g.Select(x => x * 100 / max).ToArray(); // sélect = boucle for pour chaque valeur du tableau
-            int[] perc_b = b.Select(x => x * 100 / max).ToArray();
+            int[] perc_g = !channel_g ? null : g.Select(x => x * 100 / max).ToArray(); // sélect = boucle for pour chaque valeur du tableau
+            int[] perc_b = !channel_b ? null : b.Select(x => x * 100 / max).ToArray();
 
-            for(int i = 0; i < 256; i++)
+            if(channel_r)
             {
-                perc_r[i] = r[i] * 100 / max;
+                for (int i = 0; i < 256; i++)
+                {
+                    perc_r[i] = r[i] * 100 / max;
+                }
             }
 
             for (int x = 0; x < result.Width; x++)
             {
                 for(int y = 0; y < result.Height; y++)
                 {
-                    result[x, 99 - y] = new Pixel((byte)(y < perc_r[x] * 2 ? 255 : 0), (byte)(y < perc_g[x] * 2 ? 255 : 0), (byte)(y < perc_b[x] * 2 ? 255 : 0));
+                    result[x, 99 - y] = new Pixel((byte)(channel_r && y < perc_r[x] * 2 ? 255 : 0), (byte)(channel_g && y < perc_g[x] * 2 ? 255 : 0), (byte)(channel_b && y < perc_b[x] * 2 ? 255 : 0));
                 }
             }
 

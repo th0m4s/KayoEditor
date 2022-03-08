@@ -26,7 +26,7 @@ namespace KayoEditorGUI
             QuestionContent.Text = question;
         }
 
-        public T AskEnum<T>() where T : Enum {
+        public T AskEnum<T>(int defaultIndex = -1) where T : Enum {
             Input_ComboBox.Visibility = Visibility.Visible;
 
             T[] values = (T[])Enum.GetValues(typeof(T));
@@ -36,6 +36,7 @@ namespace KayoEditorGUI
                 Display = x.GetDescription()
             });
 
+            Input_ComboBox.SelectedIndex = defaultIndex;
             ShowDialog();
 
             object item = Input_ComboBox.SelectedItem;
@@ -44,7 +45,7 @@ namespace KayoEditorGUI
             return ((Item<T>)item).Value;
         }
 
-        public T AskValue<T>(T[] values, string[] display = null)
+        public T AskValue<T>(T[] values, string[] display = null, int defaultIndex = -1)
         {
             Input_ComboBox.Visibility = Visibility.Visible;
             Input_ComboBox.ItemsSource = values.Select((T x, int i) => new Item<T>
@@ -53,6 +54,7 @@ namespace KayoEditorGUI
                 Display = display != null && display.Length > i ? display[i] : x.ToString()
             });
 
+            Input_ComboBox.SelectedIndex = defaultIndex;
             ShowDialog();
 
             object item = Input_ComboBox.SelectedItem;
