@@ -275,6 +275,34 @@ namespace KayoEditor
             return result;
         }
 
+        public ImagePSI Rotate(int angle)
+        {
+            double rad = angle * (double)Math.PI / 180;
+            double cos = (double)Math.Cos(rad);
+            double sin = (double)Math.Sin(rad);
+
+            int newWidth = (int)(Width * Math.Abs(cos) + Height * Math.Abs(sin));
+            int newHeight = (int)(Width * Math.Abs(sin) + Height * Math.Abs(cos));
+
+            ImagePSI result = new ImagePSI(newWidth, newHeight);
+
+            for (int x = 0; x < newWidth; x++)
+            {
+                for (int y = 0; y < newHeight; y++)
+                {
+                    double newX = (x - newWidth / 2) * cos - (y - newHeight / 2) * sin + Width / 2;
+                    double newY = (x - newWidth / 2) * sin + (y - newHeight / 2) * cos + Height / 2;
+
+                    if (newX >= 0 && newX < Width && newY >= 0 && newY < Height)
+                    {
+                        result[x, y] = this[(int)newX, (int)newY];
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public ImagePSI Scale(float scale)
         {
             if (scale == 0)

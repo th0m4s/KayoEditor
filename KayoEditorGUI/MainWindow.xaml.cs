@@ -278,8 +278,21 @@ namespace KayoEditorGUI
         {
             QuestionPopup popup = new QuestionPopup("Angle (en degrés) :");
 
-            int angle = popup.AskInt();
-            MessagePopup.Show("angle" + angle);
+            int angle = popup.AskInt() % 360;
+            while(angle < 0) angle += 360; // modulo doesn't work with negative numbers
+
+            if(popup.Confirmed)
+            {
+                try
+                {
+                    resultImage = resultImage.Rotate(angle);
+                    resultImageDisplay.UpdateImage(resultImage);
+                }
+                catch (Exception exception)
+                {
+                    MessagePopup.Show("Impossible de tourner l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
         }
 
         private void TransformFlip_Click(object sender, RoutedEventArgs e)
