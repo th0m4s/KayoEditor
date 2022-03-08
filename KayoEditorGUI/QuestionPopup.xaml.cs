@@ -192,5 +192,14 @@ namespace KayoEditorGUI
                 return Display;
             }
         }
+
+        private void Input_Text_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                confirmed = true;
+                Close();
+            }
+        }
     }
 }

@@ -22,7 +22,8 @@
                            Name="QuestionContent" Text="" TextAlignment="Center" Margin="5,2,5,60" Foreground="White" />
 
                 <Grid Margin="5,0,5,35" Height="22" VerticalAlignment="Bottom">
-                    <TextBox Name="Input_Text" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" Visibility="Collapsed" />
+                    <TextBox Name="Input_Text" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBox_Pasting" 
+                             Visibility="Collapsed" KeyDown="Input_Text_KeyDown" />
                     <ComboBox Name="Input_ComboBox" Visibility="Collapsed" />
                 </Grid>
 
