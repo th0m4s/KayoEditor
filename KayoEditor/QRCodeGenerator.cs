@@ -22,13 +22,29 @@ namespace KayoEditor
 
         private static byte[,] marker =
         {
-            { 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 0, 0, 0, 0, 0, 1 },
-            { 1, 0, 1, 1, 1, 0, 1 },
-            { 1, 0, 1, 1, 1, 0, 1 },
-            { 1, 0, 1, 1, 1, 0, 1 },
-            { 1, 0, 0, 0, 0, 0, 1 },
-            { 1, 1, 1, 1, 1, 1, 1 }
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 1, 1, 1, 1, 1, 1, 1, 0 },
+            { 0, 1, 0, 0, 0, 0, 0, 1, 0 },
+            { 0, 1, 0, 1, 1, 1, 0, 1, 0 },
+            { 0, 1, 0, 1, 1, 1, 0, 1, 0 },
+            { 0, 1, 0, 1, 1, 1, 0, 1, 0 },
+            { 0, 1, 0, 0, 0, 0, 0, 1, 0 },
+            { 0, 1, 1, 1, 1, 1, 1, 1, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+        };
+
+        private static Dictionary<char, byte> encoding = new Dictionary<char, byte>
+        {
+            { '0', 0 }, { '1', 1 }, { '2', 2 }, { '3', 3 }, { '4', 4 }, 
+            { '5', 5 }, { '6', 6 }, { '7', 7 }, { '8', 8 }, { '9', 9 }, 
+            
+            { 'A', 10 }, { 'B', 11 }, { 'C', 12 }, { 'D', 13 }, { 'E', 14 }, { 'F', 15 }, { 'G', 16 },
+            { 'H', 17 }, { 'I', 18 }, { 'J', 19 }, { 'K', 20 }, { 'L', 21 }, { 'M', 22 }, { 'N', 23 }, 
+            { 'O', 24 }, { 'P', 25 }, { 'Q', 26 }, { 'R', 27 }, { 'S', 28 }, { 'T', 29 }, { 'U', 30 }, 
+            { 'V', 31 }, { 'W', 32 }, { 'X', 33 }, { 'Y', 34 }, { 'Z', 35 },
+
+            { ' ', 36 }, { '$', 37 }, { '%', 38 }, { '*', 39 }, { '+', 40 }, 
+            { '-', 41 }, { '.', 42 }, { '/', 43 }, { ':', 44 }
         };
 
         public static ImagePSI GenerateQRCode(string text)
@@ -41,9 +57,9 @@ namespace KayoEditor
 
             ImagePSI qrcode = new ImagePSI(size, size);
 
-            // adding markers
-            int startFarMarker = 14 + (version - 1) * 4;
-            int[,] markerOrigins = { { 0, 0 }, { 0, startFarMarker }, { startFarMarker, 0 } };
+            // adding markers and separation lines
+            int startFarMarker = 13 + (version - 1) * 4;
+            int[,] markerOrigins = { { -1, -1 }, { -1, startFarMarker }, { startFarMarker, -1 } };
             for (int i = 0; i < markerOrigins.GetLength(0); i++)
             {
                 int originX = markerOrigins[i, 0], originY = markerOrigins[i, 1];
@@ -52,37 +68,20 @@ namespace KayoEditor
                 {
                     for (int x = 0; x < marker.GetLength(1); x++)
                     {
-                        qrcode[originX + x, originY + y] = IntPixel(marker[y, x]);
+                        int nx = originX + x;
+                        int ny = originY + y;
+                        if(nx >= 0 && ny >= 0 && nx < size && ny < size)
+                        {
+                            qrcode[nx, ny] = IntPixel(marker[y, x]);
+                        }
                     }
                 }
             }
 
-            // adding separation lines
-            for (int y = 0; y < size; y++)
-            {
-                if (y < 8 || y > startFarMarker - 1)
-                    qrcode[7, y] = White;
+            bool[] header = { false, false, true, false };
+            bool[] data = new bool[(version == 1 ? 26 : 44) * 8];
+            // W.I.P.
 
-                if (y == 7)
-                {
-                    for (int x = 0; x < size; x++)
-                    {
-                        if (x < 7 || x > startFarMarker - 1)
-                            qrcode[x, y] = White;
-                    }
-                }
-                else if (y == startFarMarker - 1)
-                {
-                    for (int x = 0; x < 8; x++)
-                    {
-                        qrcode[x, y] = White;
-                    }
-                }
-            }
-            for (int y = 0; y < 8; y++)
-            {
-                qrcode[startFarMarker - 1, y] = White;
-            }
 
             return qrcode.Scale(10);
             // throw new NotImplementedException("Cannot generate a QR code yet!");
