@@ -240,14 +240,26 @@ namespace KayoEditorGUI
 
         private void TransformGreyscale_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.Greyscale();
-            resultImageDisplay.UpdateImage(resultImage);
+            try
+            {
+                resultImage = ProgressPopup.ComputeImage(() => resultImage.Greyscale(), "Transformation en nuances de gris...");
+                resultImageDisplay.UpdateImage(resultImage);
+            } catch(Exception exception)
+            {
+                ShowException(exception, "Impossible de transformer l'image en nuances de gris");
+            }
         }
 
         private void TransformBlackWhite_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.BlackAndWhite();
-            resultImageDisplay.UpdateImage(resultImage);
+            try
+            {
+                resultImage = ProgressPopup.ComputeImage(() => resultImage.BlackAndWhite(), "Mise en noir et blanc...");
+                resultImageDisplay.UpdateImage(resultImage);
+            } catch(Exception exception)
+            {
+                ShowException(exception, "Impossible de transformer l'image en noir et blanc");
+            }
         }
 
         private void TransformScale_Click(object sender, RoutedEventArgs e)
@@ -261,11 +273,11 @@ namespace KayoEditorGUI
                 {
                     try
                     {
-                        resultImage = resultImage.Scale(scale);
+                        resultImage = ProgressPopup.ComputeImage(() => resultImage.Scale(scale), (scale < 1 ? "Rétrécissement" : "Agrandissement") + " de l'image...");
                         resultImageDisplay.UpdateImage(resultImage);
                     } catch(Exception exception)
                     {
-                        MessagePopup.Show("Impossible d'agrandir l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                        ShowException(exception, "Impossible d'agrandir l'image");
                     }
                 } else
                 {
@@ -285,12 +297,12 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    resultImage = resultImage.Rotate(angle);
+                    resultImage = ProgressPopup.ComputeImage(() => resultImage.Rotate(angle), "Rotation de l'image...");
                     resultImageDisplay.UpdateImage(resultImage);
                 }
                 catch (Exception exception)
                 {
-                    MessagePopup.Show("Impossible de tourner l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible de tourner l'image");
                 }
             }
         }
@@ -304,11 +316,11 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    resultImage = resultImage.Flip(mode);
+                    resultImage = ProgressPopup.ComputeImage(() => resultImage.Flip(mode), "Application de l'effet miroir...");
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
-                    MessagePopup.Show("Impossible de retourner l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible de retourner l'image");
                 }
             }
         }
@@ -320,8 +332,14 @@ namespace KayoEditorGUI
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = loadedImage.Copy();
-            resultImageDisplay.UpdateImage(resultImage);
+            try
+            {
+                resultImage = ProgressPopup.ComputeImage(() => loadedImage.Copy(), "Réinitialisation de l'image...");
+                resultImageDisplay.UpdateImage(resultImage);
+            } catch(Exception exception)
+            {
+                ShowException(exception, "Impossible de charger la photo originale");
+            }
         }
 
         private void CreateQRC_Clicked(object sender, RoutedEventArgs e)
@@ -333,10 +351,10 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    LoadImage(QRCodeGenerator.GenerateQRCode(message));
+                    LoadImage(ProgressPopup.ComputeImage(() => QRCodeGenerator.GenerateQRCode(message), "Création du QR code..."));
                 } catch(Exception exception)
                 {
-                    MessagePopup.Show("Impossible de générer le QR code : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible de générer le QR code");
                 }
             }
         }
@@ -350,24 +368,36 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    LoadImage(FractalGenerator.GenerateFractal(1280, 720, c));
+                    LoadImage(ProgressPopup.ComputeImage(() => FractalGenerator.GenerateFractal(1280, 720, c), "Génération de la fractale..."));
                 } catch(Exception exception)
                 {
-                    MessagePopup.Show("Impossible de générer la fractale : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible de générer la fractale");
                 }
             }
         }
 
         private void TransformNegative_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.Negative();
-            resultImageDisplay.UpdateImage(resultImage);
+            try
+            {
+                resultImage = ProgressPopup.ComputeImage(() => resultImage.Negative(), "Transformation en négatif...");
+                resultImageDisplay.UpdateImage(resultImage);
+            } catch(Exception exception)
+            {
+                ShowException(exception, "Impossible d'obtenir le négatif de l'image");
+            }
         }
 
         private void TransformInvert_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.Invert();
-            resultImageDisplay.UpdateImage(resultImage);
+            try
+            {
+                resultImage = ProgressPopup.ComputeImage(() => resultImage.Invert(), "Inversion des intensités...");
+                resultImageDisplay.UpdateImage(resultImage);
+            } catch(Exception exception)
+            {
+                ShowException(exception, "Impossible d'inverser les intensités");
+            }
         }
 
         private void TransformKernel_Click(object sender, RoutedEventArgs e)
@@ -382,11 +412,11 @@ namespace KayoEditorGUI
 
                 try
                 {
-                    resultImage = resultImage.ApplyKernel(kernel, kernelOrigin, edgeProcessing);
+                    resultImage = ProgressPopup.ComputeImage(() => resultImage.ApplyKernel(kernel, kernelOrigin, edgeProcessing), "Application du filtre...");
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
-                    MessagePopup.Show("Impossible d'appliquer le filtre : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible d'appliquer le filtre");
                 }
             }
         }
@@ -409,11 +439,11 @@ namespace KayoEditorGUI
                     bool g = channel == HistogramChannel.Green || channel == HistogramChannel.All;
                     bool b = channel == HistogramChannel.Blue || channel == HistogramChannel.All;
 
-                    resultImage = resultImage.Histogram(r, g, b);
+                    resultImage = ProgressPopup.ComputeImage(() => resultImage.Histogram(r, g, b), "Création de l'histogramme...");
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
-                    MessagePopup.Show("Impossible de calculer l'histogramme : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible de calculer l'histogramme");
                 }
             }
         }
@@ -428,18 +458,18 @@ namespace KayoEditorGUI
                 try
                 {
                     ImagePSI imageToHide = new ImagePSI(dialog.FileName);
-                    resultImage = resultImage.HideImageInside(imageToHide);
+                    resultImage = ProgressPopup.ComputeImage(() => resultImage.HideImageInside(imageToHide));
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
-                    MessagePopup.Show("Impossible de cacher l'image : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                    ShowException(exception, "Impossible de cacher l'image");
                 }
             }
         }
 
         private void TransformDecode_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = resultImage.GetHiddenImage();
+            resultImage = ProgressPopup.ComputeImage(() => resultImage.GetHiddenImage(), "Décodage de l'image...");
             resultImageDisplay.UpdateImage(resultImage);
         }
 
@@ -452,6 +482,14 @@ namespace KayoEditorGUI
             {
                 currentPaintColor = pixel;
                 PaintColorPreview.Fill = new SolidColorBrush(Color.FromRgb(pixel.R, pixel.G, pixel.B));
+            }
+        }
+
+        private void ShowException(Exception exception, string message = "Une erreur est survenue", bool ignoreCanceled = true)
+        {
+            if(!ignoreCanceled || exception.GetType() != typeof(OperationCanceledException))
+            {
+                MessagePopup.Show(message + " : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
             }
         }
     }

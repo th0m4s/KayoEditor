@@ -1,0 +1,30 @@
+﻿<Window x:Class="KayoEditorGUI.ProgressPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KayoEditorGUI"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Title="Kayo Editor Message" SizeToContent="WidthAndHeight" Background="#36393F">
+
+    <Border BorderThickness="1" BorderBrush="#202225">
+        <Grid Name="EntireWindow" Height="85" Width="300">
+            <Grid Name="TopBar" VerticalAlignment="Top" Background="#202225" MouseDown="TopBar_MouseDown" Height="22">
+                <TextBlock HorizontalAlignment="Left" Margin="6,2,0,0" Foreground="White" Width="185" Height="16"
+                           VerticalAlignment="Top">Kayo Editor - Opération en cours...</TextBlock>
+            </Grid>
+            <Grid Name="Contents" Margin="0,22,0,0">
+                <TextBlock HorizontalAlignment="Center" Height="Auto" Width="Auto" TextWrapping="Wrap" VerticalAlignment="Top"
+                           Name="MessageContent" Text="" TextAlignment="Center" Margin="10,10,10,35" Foreground="White" />
+
+                <!-- right margin of 70 if cancel button is visible -->
+                <ProgressBar Margin="5,0,5,5" Height="20" VerticalAlignment="Bottom" IsIndeterminate="True" />
+                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5,5,5,5" Content="Annuler" Padding="8,0" Height="20"
+                        Name="CancelButton" Click="CancelButton_Click" Visibility="Hidden" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
