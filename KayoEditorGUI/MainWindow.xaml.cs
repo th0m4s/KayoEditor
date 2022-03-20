@@ -341,6 +341,23 @@ namespace KayoEditorGUI
             }
         }
 
+        private void CreateFractal_Clicked(object sender, RoutedEventArgs e)
+        {
+            QuestionPopup popup = new QuestionPopup("Formule du complexe c :");
+            Complex c = popup.AskValue(new Complex[] { new Complex(0.3, 0.5), new Complex(0.285, 0.01), new Complex(-1.417022285618, 0.0099534), new Complex(-0.038088, 0.9754633), new Complex(0.285, 0.013), new Complex(0.285, 0.01), new Complex(-1.476,0), new Complex(-0.4, 0.6), new Complex(-0.8, 0.156) });
+
+            if(popup.Confirmed)
+            {
+                try
+                {
+                    LoadImage(FractalGenerator.GenerateFractal(1280, 720, c));
+                } catch(Exception exception)
+                {
+                    MessagePopup.Show("Impossible de générer la fractale : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                }
+            }
+        }
+
         private void TransformNegative_Click(object sender, RoutedEventArgs e)
         {
             resultImage = resultImage.Negative();

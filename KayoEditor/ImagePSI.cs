@@ -213,7 +213,7 @@ namespace KayoEditor
 
         public ImagePSI Histogram(bool channel_r = true, bool channel_g = true, bool channel_b = true)
         {
-            ImagePSI result = new ImagePSI(255, 100);
+            ImagePSI result = new ImagePSI(256, 100);
 
             int[] r = new int[256];
             int[] g = new int[256];

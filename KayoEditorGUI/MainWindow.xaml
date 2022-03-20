@@ -59,7 +59,7 @@
                         <Button Content="Créer un QR code..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="CreateQRC_Button" Click="CreateQRC_Clicked" />
                         <Button Content="Créer une fractale..." HorizontalAlignment="Center" VerticalAlignment="Top"
-                            Padding="3" Width="130" Name="CreateFractal_Button" IsEnabled="False" />
+                            Padding="3" Width="130" Name="CreateFractal_Button" Click="CreateFractal_Clicked" />
                     </UniformGrid>
 
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Width="380" TextAlignment="Center"
