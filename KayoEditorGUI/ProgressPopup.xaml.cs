@@ -59,7 +59,7 @@ namespace KayoEditorGUI
                 throw new OperationCanceledException();
 
             if (exception != null)
-                throw exception;
+                throw new ImageComputeException(exception);
 
             return result;
         }
@@ -91,5 +91,10 @@ namespace KayoEditorGUI
                 Close();
             }
         }
+    }
+
+    public class ImageComputeException : Exception
+    {
+        public ImageComputeException(Exception inner) : base("", inner) { }
     }
 }

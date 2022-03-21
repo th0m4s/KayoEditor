@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KayoEditor\KayoEditor.csproj" />
+    <ProjectReference Include="..\ReedSolomon\ReedSolomon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -487,9 +487,13 @@ namespace KayoEditorGUI
 
         private void ShowException(Exception exception, string message = "Une erreur est survenue", bool ignoreCanceled = true)
         {
-            if(!ignoreCanceled || exception.GetType() != typeof(OperationCanceledException))
+            Type type = exception.GetType();
+            if(!ignoreCanceled || type != typeof(OperationCanceledException))
             {
-                MessagePopup.Show(message + " : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
+                if(type == typeof(ImageComputeException))
+                    exception = exception.InnerException;
+                
+                MessagePopup.Show(message + " : " + exception.Message + " (" + type.Name + ")\n" + exception.StackTrace);
             }
         }
     }
