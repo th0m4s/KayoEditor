@@ -8,7 +8,7 @@ using ReedSolomon;
 
 namespace KayoEditor
 {
-    public static class QRCodeGenerator
+    public static class QRCode
     {
         private static readonly Regex extentedRegex = new Regex(@"^[a-zA-Z0-9$%*+\-./: ]{0,47}$");
         private static readonly Regex strictRegex = new Regex(@"^[A-Z0-9$%*+\-./: ]{0,47}$");
@@ -139,10 +139,11 @@ namespace KayoEditor
 
             string data = "0010" + Convert.ToString(text.Length, 2).PadLeft(9, '0');
 
-            for(int i = 0; i < text.Length - 2; i+=2)
+            for(int i = 0; i < text.Length - 1; i+=2)
             {
                 string pair = text.Substring(i, 2);
-                data += Convert.ToString(encoding[pair[0]] * 45 + encoding[pair[1]], 2).PadLeft(11, '0');                
+                int val = encoding[pair[0]] * 45 + encoding[pair[1]];
+                data += Convert.ToString(val, 2).PadLeft(11, '0');                
             }
             
             if (text.Length % 2 != 0)
@@ -160,7 +161,8 @@ namespace KayoEditor
                 }
             }
 
-            if(data.Length < maxbits && data.Length % 8 != 0)
+            
+            if (data.Length < maxbits && data.Length % 8 != 0)
             {
                 int zerosCount = 8 - data.Length % 8;
                 for(int i = 0; i < zerosCount; i++)
@@ -189,8 +191,6 @@ namespace KayoEditor
                 data += Convert.ToString(ecc[i], 2).PadLeft(8, '0');
             }
 
-            // throw new Exception(string.Join(' ', dataBytes.Select(x => x.ToString())) + " ecc " + String.Join(' ', ecc.Select(x => x.ToString())));
-
             counter = 0;
             for (int x = size - 1; x >= 0; x -= 2)
             {
@@ -208,23 +208,124 @@ namespace KayoEditor
 
                     if (IsModuleFree(version, x, ny))
                     {
-                        qrcode[x, ny] = /*new Pixel((byte)((counter++) % 255), 0, 0);*/ GetPixelFromData(data, counter++, x, ny, size);
+                        qrcode[x, ny] = GetPixelFromData(data, counter++, x, ny, size);
                     }
 
                     if (IsModuleFree(version, x - 1, ny))
                     {
-                        qrcode[x - 1, ny] = /*new Pixel((byte)((counter++) % 255), 0, 0);*/ GetPixelFromData(data, counter++, x - 1, ny, size);
+                        qrcode[x - 1, ny] = GetPixelFromData(data, counter++, x - 1, ny, size);
                     }
                 }
             }
 
-            // throw new Exception(data);
             return qrcode;
         }
 
         private static Pixel GetPixelFromData(string data, int counter, int x, int y, int size)
         {
             return IntPixel(Math.Abs((counter < data.Length ? data[counter] : '0') - 48 - (x + size - y) % 2));
+        }
+
+        public static string ReadQRCode(ImagePSI qrcode)
+        {
+            int version = 0;
+            int height = qrcode.Height;
+            int width = qrcode.Width;
+
+            if (height != width)
+                throw new FormatException("image width and height should be identical");
+
+            if (height % 21 == 0) version = 1;
+            else if (height % 25 == 0) version = 2;
+
+            if (version == 0)
+                throw new FormatException("unknown qrcode version!");
+
+            int size = version == 1 ? 21 : 25;
+
+            if (height != size)
+                qrcode = qrcode.Scale(size / (float)height);
+
+            qrcode = qrcode.BlackAndWhite();
+
+            string bits = "";
+            for (int x = size - 1; x >= 0; x -= 2)
+            {
+                if (x == 6)
+                {
+                    x--;
+                }
+
+                bool up = (x / 2) % 2 == 0;
+                if (x < 6) up = !up;
+
+                for (int y = size - 1; y >= 0; y--)
+                {
+                    int ny = up ? y : size - 1 - y;
+
+                    if (IsModuleFree(version, x, ny))
+                    {
+                        bits += GetBitFromPixel(qrcode[x, ny], x, ny, size);
+                    }
+
+                    if (IsModuleFree(version, x - 1, ny))
+                    {
+                        bits += GetBitFromPixel(qrcode[x - 1, ny], x - 1, ny, size);
+                    }
+                }
+            }
+
+            int bytesLength = bits.Length / 8;
+            int eccBytesLength = version == 1 ? 7 : 10;
+
+            byte[] message = new byte[bytesLength - eccBytesLength];
+            byte[] ecc = new byte[eccBytesLength];
+
+            for (int i = 0; i < bytesLength; i++)
+            {
+                byte val = Convert.ToByte(bits.Substring(i * 8, 8), 2);
+                if (i < bytesLength - eccBytesLength)
+                    message[i] = val;
+                else ecc[i - bytesLength + eccBytesLength] = val;
+            }
+
+            byte[] correctedMessage = ReedSolomonAlgorithm.Decode(message, ecc, ErrorCorrectionCodeType.QRCode);
+
+            if (correctedMessage == null)
+                throw new FormatException("qrcode is damaged!");
+
+            string data = string.Join("", correctedMessage.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
+
+            int textLength = Convert.ToInt32(data.Substring(4, 9), 2);
+            string text = "";
+
+            for (int i = 0; i < textLength - 1; i += 2)
+            {
+                int pairNumber = Convert.ToInt32(data.Substring(4 + 9 + i / 2 * 11, 11), 2);
+
+                int secondNum = pairNumber % 45;
+                int firstNum = (pairNumber - secondNum) / 45;
+
+                text += DecodeSingle(firstNum);
+                text += DecodeSingle(secondNum);
+            }
+
+            if (textLength % 2 != 0)
+            {
+                text += DecodeSingle(Convert.ToInt32(data.Substring(4 + 9 + (textLength - 1) / 2 * 11, 6), 2));
+            }
+
+            return text;
+        }
+        
+        private static char GetBitFromPixel(Pixel pixel, int x, int y, int size)
+        {
+            return Math.Abs(pixel.R / 255 - (x + size - y) % 2) == 0 ? '1' : '0';
+        }
+
+        private static char DecodeSingle(int val)
+        {
+            return encoding.First(x => x.Value == val).Key;
         }
 
         private static bool IsModuleFree(int version, int x, int y) {

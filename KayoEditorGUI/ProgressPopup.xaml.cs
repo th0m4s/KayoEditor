@@ -13,10 +13,10 @@ namespace KayoEditorGUI
     public partial class ProgressPopup : Window
     {
         private Thread computeThread = null;
-        private Func<ImagePSI> computeMethod;
+        private Func<object> computeMethod;
         private bool canceled = false;
 
-        private ProgressPopup(Func<ImagePSI> method, string message)
+        private ProgressPopup(Func<object> method, string message)
         {
             InitializeComponent();
 
@@ -24,15 +24,15 @@ namespace KayoEditorGUI
             MessageContent.Text = message;
         }
 
-        public static ImagePSI ComputeImage(Func<ImagePSI> method, string message = "Veuillez patienter...")
+        public static T Compute<T>(Func<T> method, string message = "Veuillez patienter...") where T : class
         {
             ProgressPopup popup = new ProgressPopup(method, message);
-            return popup.Compute();
+            return popup.Compute<T>();
         }
 
-        private ImagePSI Compute()
+        private T Compute<T>()
         {
-            ImagePSI result = null;
+            object result = null;
             Exception exception = null;
 
             computeThread = new Thread(() =>
@@ -61,9 +61,9 @@ namespace KayoEditorGUI
             if (exception != null)
                 throw new ImageComputeException(exception);
 
-            return result;
+            return (T)result;
         }
-
+        
         private new void Close()
         {
             Dispatcher.Invoke(() => base.Close());

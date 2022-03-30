@@ -311,6 +311,11 @@ namespace KayoEditor
             if (scale < 0)
                 throw new ArgumentOutOfRangeException("scale", "scale must be a positive number");
 
+            ImagePSI source = this.Copy();
+
+            if (scale == 1)
+                return source;
+
             int newWidth = (int)(Width * scale);
             int newHeight = (int)(Height * scale);
 
@@ -319,8 +324,6 @@ namespace KayoEditor
 
             if (newHeight == 0)
                 newHeight = 1;
-
-            ImagePSI source = this.Copy();
 
             if(scale < 1)
             {

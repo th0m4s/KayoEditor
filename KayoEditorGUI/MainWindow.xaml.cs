@@ -242,7 +242,7 @@ namespace KayoEditorGUI
         {
             try
             {
-                resultImage = ProgressPopup.ComputeImage(() => resultImage.Greyscale(), "Transformation en nuances de gris...");
+                resultImage = ProgressPopup.Compute(() => resultImage.Greyscale(), "Transformation en nuances de gris...");
                 resultImageDisplay.UpdateImage(resultImage);
             } catch(Exception exception)
             {
@@ -254,7 +254,7 @@ namespace KayoEditorGUI
         {
             try
             {
-                resultImage = ProgressPopup.ComputeImage(() => resultImage.BlackAndWhite(), "Mise en noir et blanc...");
+                resultImage = ProgressPopup.Compute(() => resultImage.BlackAndWhite(), "Mise en noir et blanc...");
                 resultImageDisplay.UpdateImage(resultImage);
             } catch(Exception exception)
             {
@@ -273,7 +273,7 @@ namespace KayoEditorGUI
                 {
                     try
                     {
-                        resultImage = ProgressPopup.ComputeImage(() => resultImage.Scale(scale), (scale < 1 ? "Rétrécissement" : "Agrandissement") + " de l'image...");
+                        resultImage = ProgressPopup.Compute(() => resultImage.Scale(scale), (scale < 1 ? "Rétrécissement" : "Agrandissement") + " de l'image...");
                         resultImageDisplay.UpdateImage(resultImage);
                     } catch(Exception exception)
                     {
@@ -297,7 +297,7 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    resultImage = ProgressPopup.ComputeImage(() => resultImage.Rotate(angle), "Rotation de l'image...");
+                    resultImage = ProgressPopup.Compute(() => resultImage.Rotate(angle), "Rotation de l'image...");
                     resultImageDisplay.UpdateImage(resultImage);
                 }
                 catch (Exception exception)
@@ -316,7 +316,7 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    resultImage = ProgressPopup.ComputeImage(() => resultImage.Flip(mode), "Application de l'effet miroir...");
+                    resultImage = ProgressPopup.Compute(() => resultImage.Flip(mode), "Application de l'effet miroir...");
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
@@ -334,7 +334,7 @@ namespace KayoEditorGUI
         {
             try
             {
-                resultImage = ProgressPopup.ComputeImage(() => loadedImage.Copy(), "Réinitialisation de l'image...");
+                resultImage = ProgressPopup.Compute(() => loadedImage.Copy(), "Réinitialisation de l'image...");
                 resultImageDisplay.UpdateImage(resultImage);
             } catch(Exception exception)
             {
@@ -345,13 +345,13 @@ namespace KayoEditorGUI
         private void CreateQRC_Clicked(object sender, RoutedEventArgs e)
         {
             QuestionPopup popup = new QuestionPopup("Message (47 caractères alphanumériques max.) :");
-            string message = popup.AskText(QRCodeGenerator.ExtendedRegex).ToUpper();
+            string message = popup.AskText(QRCode.ExtendedRegex).ToUpper();
 
             if(popup.Confirmed)
             {
                 try
                 {
-                    LoadImage(ProgressPopup.ComputeImage(() => QRCodeGenerator.GenerateQRCode(message).Scale(10), "Création du QR code..."));
+                    LoadImage(ProgressPopup.Compute(() => QRCode.GenerateQRCode(message).Scale(10), "Création du QR code..."));
                 } catch(Exception exception)
                 {
                     ShowException(exception, "Impossible de générer le QR code");
@@ -368,7 +368,7 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    LoadImage(ProgressPopup.ComputeImage(() => FractalGenerator.GenerateFractal(1280, 720, c), "Génération de la fractale..."));
+                    LoadImage(ProgressPopup.Compute(() => FractalGenerator.GenerateFractal(1280, 720, c), "Génération de la fractale..."));
                 } catch(Exception exception)
                 {
                     ShowException(exception, "Impossible de générer la fractale");
@@ -380,7 +380,7 @@ namespace KayoEditorGUI
         {
             try
             {
-                resultImage = ProgressPopup.ComputeImage(() => resultImage.Negative(), "Transformation en négatif...");
+                resultImage = ProgressPopup.Compute(() => resultImage.Negative(), "Transformation en négatif...");
                 resultImageDisplay.UpdateImage(resultImage);
             } catch(Exception exception)
             {
@@ -392,7 +392,7 @@ namespace KayoEditorGUI
         {
             try
             {
-                resultImage = ProgressPopup.ComputeImage(() => resultImage.Invert(), "Inversion des intensités...");
+                resultImage = ProgressPopup.Compute(() => resultImage.Invert(), "Inversion des intensités...");
                 resultImageDisplay.UpdateImage(resultImage);
             } catch(Exception exception)
             {
@@ -412,7 +412,7 @@ namespace KayoEditorGUI
 
                 try
                 {
-                    resultImage = ProgressPopup.ComputeImage(() => resultImage.ApplyKernel(kernel, kernelOrigin, edgeProcessing), "Application du filtre...");
+                    resultImage = ProgressPopup.Compute(() => resultImage.ApplyKernel(kernel, kernelOrigin, edgeProcessing), "Application du filtre...");
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
@@ -423,7 +423,14 @@ namespace KayoEditorGUI
 
         private void TransformReadQR_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                MessagePopup.Show("Message : " + ProgressPopup.Compute(() => QRCode.ReadQRCode(resultImage), "Lecture du QR code..."));
+            }
+            catch (Exception exception)
+            {
+                ShowException(exception, "Impossible de lire le QR code");
+            }
         }
 
         private void TransformHisto_Click(object sender, RoutedEventArgs e)
@@ -439,7 +446,7 @@ namespace KayoEditorGUI
                     bool g = channel == HistogramChannel.Green || channel == HistogramChannel.All;
                     bool b = channel == HistogramChannel.Blue || channel == HistogramChannel.All;
 
-                    resultImage = ProgressPopup.ComputeImage(() => resultImage.Histogram(r, g, b), "Création de l'histogramme...");
+                    resultImage = ProgressPopup.Compute(() => resultImage.Histogram(r, g, b), "Création de l'histogramme...");
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
@@ -458,7 +465,7 @@ namespace KayoEditorGUI
                 try
                 {
                     ImagePSI imageToHide = new ImagePSI(dialog.FileName);
-                    resultImage = ProgressPopup.ComputeImage(() => resultImage.HideImageInside(imageToHide));
+                    resultImage = ProgressPopup.Compute(() => resultImage.HideImageInside(imageToHide));
                     resultImageDisplay.UpdateImage(resultImage);
                 } catch(Exception exception)
                 {
@@ -469,7 +476,7 @@ namespace KayoEditorGUI
 
         private void TransformDecode_Click(object sender, RoutedEventArgs e)
         {
-            resultImage = ProgressPopup.ComputeImage(() => resultImage.GetHiddenImage(), "Décodage de l'image...");
+            resultImage = ProgressPopup.Compute(() => resultImage.GetHiddenImage(), "Décodage de l'image...");
             resultImageDisplay.UpdateImage(resultImage);
         }
 
