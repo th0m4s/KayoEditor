@@ -138,55 +138,101 @@ namespace KayoEditor
             }
 
             string data = "0010" + Convert.ToString(text.Length, 2).PadLeft(9, '0');
-            string textdata = "";
 
             for(int i = 0; i < text.Length - 2; i+=2)
             {
                 string pair = text.Substring(i, 2);
-                textdata += Convert.ToString(encoding[pair[0]] * 45 + encoding[pair[1]], 2).PadLeft(11, '0');                
+                data += Convert.ToString(encoding[pair[0]] * 45 + encoding[pair[1]], 2).PadLeft(11, '0');                
             }
             
             if (text.Length % 2 != 0)
             {
-                textdata += Convert.ToString(encoding[text[text.Length-1]], 2).PadLeft(6, '0');
+                data += Convert.ToString(encoding[text[text.Length-1]], 2).PadLeft(6, '0');
             }
 
             int maxbits = (version == 1 ? 19 : 34) * 8;
 
-            if(textdata.Length < maxbits) {
-                int zerosCount = Math.Min(maxbits - textdata.Length, 4);
+            if(data.Length < maxbits) {
+                int zerosCount = Math.Min(maxbits - data.Length, 4);
                 for(int i = 0; i < zerosCount; i++)
                 {
-                    textdata += "0";
+                    data += "0";
                 }
             }
 
-            if(textdata.Length < maxbits && textdata.Length % 8 != 0)
+            if(data.Length < maxbits && data.Length % 8 != 0)
             {
-                int zerosCount = 8 - textdata.Length % 8;
+                int zerosCount = 8 - data.Length % 8;
                 for(int i = 0; i < zerosCount; i++)
                 {
-                    textdata += "0";
+                    data += "0";
                 }
             }
 
             int counter = 0;
             string[] end = { "11101100", "00010001" };
-            while(textdata.Length < maxbits)
+            while(data.Length < maxbits)
             {
-                textdata += end[(counter++) % 2];
+                data += end[(counter++) % 2];
             }
 
-            byte[] dataBytes = new byte[textdata.Length / 8];
+            byte[] dataBytes = new byte[data.Length / 8];
             for(int i = 0; i < dataBytes.Length; i++)
             {
-                dataBytes[i] = Convert.ToByte(textdata.Substring(i * 8, 8), 2);
+                dataBytes[i] = Convert.ToByte(data.Substring(i * 8, 8), 2);
             }
 
             byte[] ecc = ReedSolomonAlgorithm.Encode(dataBytes, version == 1 ? 7 : 10, ErrorCorrectionCodeType.QRCode);
 
-            return qrcode.Scale(10);
-            // throw new NotImplementedException("Cannot generate a QR code yet!");
+            for(int i = 0; i < ecc.Length; i++)
+            {
+                data += Convert.ToString(ecc[i], 2).PadLeft(8, '0');
+            }
+
+            // throw new Exception(string.Join(' ', dataBytes.Select(x => x.ToString())) + " ecc " + String.Join(' ', ecc.Select(x => x.ToString())));
+
+            counter = 0;
+            for (int x = size - 1; x >= 0; x -= 2)
+            {
+                if (x == 6)
+                {
+                    x--;
+                }
+
+                bool up = (x / 2) % 2 == 0;
+                if (x < 6) up = !up;
+
+                for (int y = size - 1; y >= 0; y--)
+                {
+                    int ny = up ? y : size - 1 - y;
+
+                    if (IsModuleFree(version, x, ny))
+                    {
+                        qrcode[x, ny] = /*new Pixel((byte)((counter++) % 255), 0, 0);*/ GetPixelFromData(data, counter++, x, ny, size);
+                    }
+
+                    if (IsModuleFree(version, x - 1, ny))
+                    {
+                        qrcode[x - 1, ny] = /*new Pixel((byte)((counter++) % 255), 0, 0);*/ GetPixelFromData(data, counter++, x - 1, ny, size);
+                    }
+                }
+            }
+
+            // throw new Exception(data);
+            return qrcode;
+        }
+
+        private static Pixel GetPixelFromData(string data, int counter, int x, int y, int size)
+        {
+            return IntPixel(Math.Abs((counter < data.Length ? data[counter] : '0') - 48 - (x + size - y) % 2));
+        }
+
+        private static bool IsModuleFree(int version, int x, int y) {
+            int size = version == 1 ? 21 : 25;
+            if(version == 2 && y >= 16 && y < 21 && x >= 16 && x < 21) return false;
+            if(y > 8 && y < size - 8) return x != 6;
+            if(x > 8 && x < size - 8) return y != 6;
+            return x > 8 && y > 8;
         }
     }
 }

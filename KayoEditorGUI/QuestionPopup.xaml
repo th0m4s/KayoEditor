@@ -8,6 +8,7 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
+        Loaded="Window_Loaded"
         Title="Kayo Editor" SizeToContent="WidthAndHeight" Background="#36393F">
 
     <Border BorderThickness="1" BorderBrush="#202225">

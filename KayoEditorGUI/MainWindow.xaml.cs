@@ -351,7 +351,7 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    LoadImage(ProgressPopup.ComputeImage(() => QRCodeGenerator.GenerateQRCode(message), "Création du QR code..."));
+                    LoadImage(ProgressPopup.ComputeImage(() => QRCodeGenerator.GenerateQRCode(message).Scale(10), "Création du QR code..."));
                 } catch(Exception exception)
                 {
                     ShowException(exception, "Impossible de générer le QR code");
@@ -493,7 +493,7 @@ namespace KayoEditorGUI
                 if(type == typeof(ImageComputeException))
                     exception = exception.InnerException;
                 
-                MessagePopup.Show(message + " : " + exception.Message + " (" + type.Name + ")\n" + exception.StackTrace);
+                MessagePopup.Show(message + " : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
             }
         }
     }

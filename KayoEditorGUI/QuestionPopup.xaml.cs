@@ -201,5 +201,11 @@ namespace KayoEditorGUI
                 Close();
             }
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Input_Text.Visibility == Visibility.Visible)
+                Input_Text.Focus();
+        }
     }
 }

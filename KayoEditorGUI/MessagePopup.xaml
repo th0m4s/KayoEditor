@@ -17,8 +17,9 @@
                            VerticalAlignment="Top">Kayo Editor</TextBlock>
             </Grid>
             <Grid Name="Contents" Margin="0,22,0,0">
-                <TextBlock HorizontalAlignment="Center" Height="Auto" Width="Auto" TextWrapping="Wrap" VerticalAlignment="Top"
-                           Name="MessageContent" Text="" TextAlignment="Center" Margin="10,10,10,50" Foreground="White" />
+                <TextBox HorizontalAlignment="Center" Height="Auto" MaxWidth="1200" Width="Auto" TextWrapping="Wrap" VerticalAlignment="Top"
+                           Name="MessageContent" TextAlignment="Center" Margin="10,10,10,50" Background="Transparent"
+                           BorderThickness="0" Text="{Binding Text, Mode=OneWay}" IsReadOnly="True" Foreground="White" />
                 
                 <UniformGrid Name="ButtonsGrid" Columns="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="5,7" >
                     <Button Name="ButtonCancel" Click="ButtonCancel_Click" DockPanel.Dock="Bottom" Content="Annuler" Padding="5,3" Visibility="Collapsed" Margin="3,0" />
