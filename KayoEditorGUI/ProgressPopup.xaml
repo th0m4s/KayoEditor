@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="None"
         ResizeMode="NoResize"
-        ShowInTaskbar="False"
+        ShowInTaskbar="True"
         Title="Kayo Editor Message" SizeToContent="WidthAndHeight" Background="#36393F">
 
     <Border BorderThickness="1" BorderBrush="#202225">

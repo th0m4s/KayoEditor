@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="None"
         ResizeMode="NoResize"
-        ShowInTaskbar="False"
+        ShowInTaskbar="True"
         Loaded="Window_Loaded"
         Title="Kayo Editor" SizeToContent="WidthAndHeight" Background="#36393F">
 
