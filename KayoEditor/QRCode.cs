@@ -78,7 +78,7 @@ namespace KayoEditor
             ImagePSI qrcode = new ImagePSI(size, size);
 
             // adding markers and separation lines
-            int startFarMarker = 13 + (version - 1) * 4;
+            int startFarMarker = 13 + (version - 1) * 4; // selon la version
             int[,] markerOrigins = { { -1, -1 }, { -1, startFarMarker }, { startFarMarker, -1 } };
             for (int i = 0; i < markerOrigins.GetLength(0); i++)
             {
@@ -133,7 +133,7 @@ namespace KayoEditor
                 {
                     int x = eccAndMaskPos[i, j, 0];
                     int y = eccAndMaskPos[i, j, 1];
-                    qrcode[x, y] = IntPixel(eccAndMask[j] - '0');
+                    qrcode[x, y] = IntPixel(eccAndMask[j] - '0'); // ou - 48 pour transformer un INT en pixel
                 }
             }
 
@@ -142,8 +142,8 @@ namespace KayoEditor
             for(int i = 0; i < text.Length - 1; i+=2)
             {
                 string pair = text.Substring(i, 2);
-                int val = encoding[pair[0]] * 45 + encoding[pair[1]];
-                data += Convert.ToString(val, 2).PadLeft(11, '0');                
+                int val = encoding[pair[0]] * 45 + encoding[pair[1]]; // base est *45^1 et 45^0h
+                data += Convert.ToString(val, 2).PadLeft(11, '0');     // (val,2) car on veut en base de 2            
             }
             
             if (text.Length % 2 != 0)
@@ -151,10 +151,10 @@ namespace KayoEditor
                 data += Convert.ToString(encoding[text[text.Length-1]], 2).PadLeft(6, '0');
             }
 
-            int maxbits = (version == 1 ? 19 : 34) * 8;
+            int maxbits = (version == 1 ? 19 : 34) * 8; // car on veut en bit : 1 octet = 8 bits
 
             if(data.Length < maxbits) {
-                int zerosCount = Math.Min(maxbits - data.Length, 4);
+                int zerosCount = Math.Min(maxbits - data.Length, 4); // on veut un padding maximum de quatre 0 
                 for(int i = 0; i < zerosCount; i++)
                 {
                     data += "0";
@@ -162,7 +162,7 @@ namespace KayoEditor
             }
 
             
-            if (data.Length < maxbits && data.Length % 8 != 0)
+            if (data.Length < maxbits && data.Length % 8 != 0) // on veut un multiple de 8 
             {
                 int zerosCount = 8 - data.Length % 8;
                 for(int i = 0; i < zerosCount; i++)
@@ -172,7 +172,7 @@ namespace KayoEditor
             }
 
             int counter = 0;
-            string[] end = { "11101100", "00010001" };
+            string[] end = { "11101100", "00010001" }; // on remplit avec ça jusqu'à atteindre la taille max (152 ou 272)
             while(data.Length < maxbits)
             {
                 data += end[(counter++) % 2];
@@ -181,26 +181,26 @@ namespace KayoEditor
             byte[] dataBytes = new byte[data.Length / 8];
             for(int i = 0; i < dataBytes.Length; i++)
             {
-                dataBytes[i] = Convert.ToByte(data.Substring(i * 8, 8), 2);
+                dataBytes[i] = Convert.ToByte(data.Substring(i * 8, 8), 2); // i*8 pour récupérer à partir de la bonne position, 8 car 8 bits, 2 car binaire
             }
 
-            byte[] ecc = ReedSolomonAlgorithm.Encode(dataBytes, version == 1 ? 7 : 10, ErrorCorrectionCodeType.QRCode);
+            byte[] ecc = ReedSolomonAlgorithm.Encode(dataBytes, version == 1 ? 7 : 10, ErrorCorrectionCodeType.QRCode); // errorcorrectioncode
 
             for(int i = 0; i < ecc.Length; i++)
             {
-                data += Convert.ToString(ecc[i], 2).PadLeft(8, '0');
+                data += Convert.ToString(ecc[i], 2).PadLeft(8, '0'); // padding sur la gauche
             }
 
             counter = 0;
-            for (int x = size - 1; x >= 0; x -= 2)
+            for (int x = size - 1; x >= 0; x -= 2) // x colonne
             {
                 if (x == 6)
                 {
                     x--;
                 }
 
-                bool up = (x / 2) % 2 == 0;
-                if (x < 6) up = !up;
+                bool up = (x / 2) % 2 == 0; // variable indiquant si on monte ou descend 
+                if (x < 6) up = !up; // on a remarqué qu'avant la 6ème colonne, le programme inverse donc on rectifie manuellement 
 
                 for (int y = size - 1; y >= 0; y--)
                 {
@@ -223,7 +223,7 @@ namespace KayoEditor
 
         private static Pixel GetPixelFromData(string data, int counter, int x, int y, int size)
         {
-            return IntPixel(Math.Abs((counter < data.Length ? data[counter] : '0') - 48 - (x + size - y) % 2));
+            return IntPixel(Math.Abs((counter < data.Length ? data[counter] : '0') - 48 - (x + size - y) % 2)); // ou - '0'
         }
 
         public static string ReadQRCode(ImagePSI qrcode)
@@ -294,14 +294,14 @@ namespace KayoEditor
             if (correctedMessage == null)
                 throw new FormatException("qrcode is damaged!");
 
-            string data = string.Join("", correctedMessage.Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
-
-            int textLength = Convert.ToInt32(data.Substring(4, 9), 2);
+            string data = string.Join("", correctedMessage.Select(x => Convert.ToString(x, 2).PadLeft(8, '0'))); // x => méthode en 1 ligne
+                                                                                                                 // Select -> tableau string
+            int textLength = Convert.ToInt32(data.Substring(4, 9), 2); // taille à partir du 5ème bit
             string text = "";
 
             for (int i = 0; i < textLength - 1; i += 2)
             {
-                int pairNumber = Convert.ToInt32(data.Substring(4 + 9 + i / 2 * 11, 11), 2);
+                int pairNumber = Convert.ToInt32(data.Substring(4 + 9 + i / 2 * 11, 11), 2); // 4 + 9 car à partir 14ème
 
                 int secondNum = pairNumber % 45;
                 int firstNum = (pairNumber - secondNum) / 45;
@@ -325,7 +325,7 @@ namespace KayoEditor
 
         private static char DecodeSingle(int val)
         {
-            return encoding.First(x => x.Value == val).Key;
+            return encoding.First(x => x.Value == val).Key; // First car seule méthode de recherche déjà existante 
         }
 
         private static bool IsModuleFree(int version, int x, int y) {

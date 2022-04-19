@@ -11,7 +11,7 @@ namespace KayoEditor
         public static ImagePSI GenerateFractal(int width, int height, Complex c)
         {
             Pixel[] colors = Enumerable.Range(0, 256).Select(c => new Pixel((byte)((c >> 5) * 36), (byte)((c >> 3 & 7) * 36), (byte)((c & 3) * 85))).ToArray();
-
+            // Enumerable quelque chose qu'on peut parcourir (tableau, liste), select est une boucle qui prend chaque élément 
             ImagePSI fractal = new ImagePSI(width, height);
 
             for (int y = 0; y < height; y++)
