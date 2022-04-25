@@ -108,6 +108,9 @@ namespace KayoEditorGUI
 
         private void Contents_Drop(object sender, DragEventArgs e)
         {
+            DragDropView.Visibility = Visibility.Collapsed;
+            Grid_WelcomeScreen.IsHitTestVisible = true;
+
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -502,6 +505,25 @@ namespace KayoEditorGUI
                 
                 MessagePopup.Show(message + " : " + exception.Message + " (" + exception.GetType().Name + ")\n" + exception.StackTrace);
             }
+        }
+
+        private void Contents_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0)
+                {
+                    DragDropView.Visibility = Visibility.Visible;
+                    Grid_WelcomeScreen.IsHitTestVisible = false;
+                }
+            }
+        }
+
+        private void Contents_DragLeave(object sender, DragEventArgs e)
+        {
+            DragDropView.Visibility = Visibility.Collapsed;
+            Grid_WelcomeScreen.IsHitTestVisible = true;
         }
     }
 

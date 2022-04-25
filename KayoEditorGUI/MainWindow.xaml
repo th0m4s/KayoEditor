@@ -46,28 +46,38 @@
                     </Path>
                 </Grid>
             </Grid>
-            <Grid Name="Contents" Background="Transparent" Margin="0,22,0,0" AllowDrop="True" Drop="Contents_Drop">
-                <Grid Name="Grid_WelcomeScreen" Visibility="Collapsed">
+            <Grid Name="Contents" Background="Transparent" Margin="0,22,0,0" AllowDrop="True" Drop="Contents_Drop" DragOver="Contents_DragOver" DragLeave="Contents_DragLeave">
+                <Grid Name="Grid_WelcomeScreen" Visibility="Visible">
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top"
-                               Foreground="White" FontSize="50" Margin="0,100,0,0">Kayo Editor</TextBlock>
+                               Foreground="White" FontSize="50" Margin="0,90,0,0">Kayo Editor</TextBlock>
                     <TextBlock HorizontalAlignment="Center" Text="Créé par Thomas BULLIMORE et Thomas LEDOS" TextWrapping="Wrap"
-                               VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="0,170,0,0" />
+                               VerticalAlignment="Top" Foreground="White" FontSize="12" Margin="0,160,0,0" />
 
-                    <UniformGrid Columns="3" VerticalAlignment="Top" HorizontalAlignment="Center" Width="410" Margin="50,210,50,0">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Width="520" TextAlignment="Center"
+                               Margin="0,215,0,0" TextWrapping="Wrap">Glissez-déposez une image sur cette fenêtre ou utilisez un bouton
+                    ci-desous pour commencer :</TextBlock>
+                    
+                    <UniformGrid Columns="3" VerticalAlignment="Top" HorizontalAlignment="Center" Width="410" Margin="0,240,0,0">
                         <Button Content="Ouvrir une image..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="OpenImage_Button" Click="OpenImage_Clicked" />
                         <Button Content="Créer un QR code..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="CreateQRC_Button" Click="CreateQRC_Clicked" />
                         <Button Content="Créer une fractale..." HorizontalAlignment="Center" VerticalAlignment="Top"
-                            Padding="3" Width="130" Name="CreateFractal_Button" Click="CreateFractal_Clicked" />
+                            Padding="3" Width="130" Name="CreateFractal_Button" Click="CreateFractal_Clicked"/>
                     </UniformGrid>
 
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" Width="380" TextAlignment="Center"
-                               Margin="50,240,50,50" TextWrapping="Wrap">Pour lire un QR code, cacher une image ou générer
+                               Margin="0,270,0,0" TextWrapping="Wrap">Pour lire un QR code, cacher une image ou générer
                         un histogramme, ouvrir l'image puis choisir l'option dans le menu de gauche.</TextBlock>
 
+                    <Border CornerRadius="20" Background="#4a4f56" Margin="20" BorderBrush="#555555" BorderThickness="1"
+                            Name="DragDropView" Visibility="Collapsed">
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" TextAlignment="Center"
+                                   FontSize="24" Width="300" TextWrapping="Wrap">Déposez l'image pour l'ouvrir dans KayoEditor...</TextBlock>
+                    </Border>
+
                 </Grid>
-                <Grid Name="Grid_EditorScreen" Visibility="Visible">
+                <Grid Name="Grid_EditorScreen" Visibility="Collapsed">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40" />
                         <RowDefinition Height="1*" />
