@@ -199,9 +199,8 @@ namespace KayoEditor
                     x--;
                 }
 
-                bool up = (x / 2) % 2 == 0; // variable indiquant si on monte ou descend 
-                if (x < 6) up = !up; // on a remarqué qu'avant la 6ème colonne, le programme inverse donc on rectifie manuellement 
-
+                bool up = ((x + 1) / 2) % 2 == 0; // variable indiquant si on monte ou descend 
+                
                 for (int y = size - 1; y >= 0; y--)
                 {
                     int ny = up ? y : size - 1 - y;
@@ -256,8 +255,7 @@ namespace KayoEditor
                     x--;
                 }
 
-                bool up = (x / 2) % 2 == 0;
-                if (x < 6) up = !up;
+                bool up = ((x + 1) / 2) % 2 == 0;
 
                 for (int y = size - 1; y >= 0; y--)
                 {
