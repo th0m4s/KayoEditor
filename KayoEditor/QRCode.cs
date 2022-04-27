@@ -19,16 +19,14 @@ namespace KayoEditor
         private static Pixel White => new Pixel(255);
         private static Pixel Black => new Pixel(0);
 
+        /// <summary>
+        /// Transforme un nombre en pixel, blanc pour 0 et noir pour 1.
+        /// </summary>
+        /// <param name="val">Valeur du bit, 0 ou 1.</param>
+        /// <returns>Un <see cref="Pixel"/> noir ou blanc.</returns>
         private static Pixel IntPixel(int val)
         {
-            if (val == 1)
-            {
-                return Black;
-            }
-            else
-            {
-                return White;
-            }
+            return val == 1 ? Black : White;
         }
 
         private static byte[,] marker =
@@ -67,6 +65,11 @@ namespace KayoEditor
             { '-', 41 }, { '.', 42 }, { '/', 43 }, { ':', 44 }
         };
 
+        /// <summary>
+        /// Génère un QRCode à partir de la chaîne de caractères donnée.
+        /// </summary>
+        /// <param name="text">Texte à encoder.</param>
+        /// <returns>Une <i>ImagePSI</i> représentant le QRCode.</returns>
         public static ImagePSI GenerateQRCode(string text)
         {
             if (!strictRegex.IsMatch(text))
@@ -220,11 +223,25 @@ namespace KayoEditor
             return qrcode;
         }
 
+        /// <summary>
+        /// Transforme un bit en pixel à partir de sa position dans les données et de sa position sur le QRCode en appliquant un masque.
+        /// </summary>
+        /// <param name="data">Suite de bits représentant les données du QRCode.</param>
+        /// <param name="counter">Position du bit à extraire.</param>
+        /// <param name="x">Position en <i>x</i> du bit sur le QRCode.</param>
+        /// <param name="y">Position en <i>y</i> du bit sur le QRCode.</param>
+        /// <param name="size">Taille du QRCode en nombre de modules par côté.</param>
+        /// <returns>Un <see cref="Pixel"/> noir ou blanc.</returns>
         private static Pixel GetPixelFromData(string data, int counter, int x, int y, int size)
         {
             return IntPixel(Math.Abs((counter < data.Length ? data[counter] : '0') - 48 - (x + size - y) % 2)); // ou - '0'
         }
 
+        /// <summary>
+        /// Lit le contenu du QRCode sous forme de chaîne de caractères.
+        /// </summary>
+        /// <param name="qrcode">Le QRCode à décoder sous forme d'<i>ImagePSI</i>.</param>
+        /// <returns>Le texte obtenu à partir de l'image.</returns>
         public static string ReadQRCode(ImagePSI qrcode)
         {
             int version = 0;
@@ -315,17 +332,37 @@ namespace KayoEditor
 
             return text;
         }
-        
+
+        /// <summary>
+        /// Transforme un <see cref="Pixel"/> en bit en appliquant un masque.
+        /// </summary>
+        /// <param name="pixel"><see cref="Pixel"/> à analyser.</param>
+        /// <param name="x">Position en <i>x</i> du bit sur le QRCode.</param>
+        /// <param name="y">Position en <i>y</i> du bit sur le QRCode.</param>
+        /// <param name="size">Taille du QRCode en nombre de modules par côté.</param>
+        /// <returns>Le bit représenté par ce <see cref="Pixel"/>.</returns>
         private static char GetBitFromPixel(Pixel pixel, int x, int y, int size)
         {
             return Math.Abs(pixel.R / 255 - (x + size - y) % 2) == 0 ? '1' : '0';
         }
 
+        /// <summary>
+        /// Recherche par valeur dans le dictionnaire d'encodage des caractères.
+        /// </summary>
+        /// <param name="val">Valeur représentant le caractère recherché.</param>
+        /// <returns>Le caractère représenté par la valeur donnée.</returns>
         private static char DecodeSingle(int val)
         {
             return encoding.First(x => x.Value == val).Key; // First car seule méthode de recherche déjà existante 
         }
 
+        /// <summary>
+        /// Vérifie si le module à la position indiquée peut contenir ou non un bit de données.
+        /// </summary>
+        /// <param name="version">Version du QRCode, 1 ou 2.</param>
+        /// <param name="x">Position en <i>x</i> du bit sur le QRCode.</param>
+        /// <param name="y">Position en <i>y</i> du bit sur le QRCode.</param>
+        /// <returns><i>false</i> si la position se trouve dans un motif d'aligmement, un marqueur ou tout autre module réservé, <i>true</i> sinon.</returns>
         private static bool IsModuleFree(int version, int x, int y) {
             int size = version == 1 ? 21 : 25;
             if(version == 2 && y >= 16 && y < 21 && x >= 16 && x < 21) return false;

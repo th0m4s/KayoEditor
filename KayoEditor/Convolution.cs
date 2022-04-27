@@ -68,11 +68,27 @@ namespace KayoEditor
             }
         };
 
+        /// <summary>
+        /// Applique une convolution à une instance d'<see cref="ImagePSI"/> donnée.
+        /// </summary>
+        /// <param name="image"><see cref="ImagePSI"/> sur laquelle va être appliquée le noyau.</param>
+        /// <param name="kernel">Noyau à appliquer.</param>
+        /// <param name="origin">Origine du noyau.</param>
+        /// <param name="edgeProcessing">Gestion des bords de l'image.</param>
+        /// <returns></returns>
         public static ImagePSI ApplyKernel(this ImagePSI image, Kernel kernel, KernelOrigin origin = KernelOrigin.Center, EdgeProcessing edgeProcessing = EdgeProcessing.KernelCrop)
         {
             return ApplyKernel(image, kernels[kernel], origin, edgeProcessing);
         }
 
+        /// <summary>
+        /// Applique une convolution à une instance d'ImagePSI donnée.
+        /// </summary>
+        /// <param name="image"><see cref="ImagePSI"/> sur laquelle va être appliquée le noyau.</param>
+        /// <param name="kernel">Noyau à appliquer.</param>
+        /// <param name="origin">Origine du Kernel.</param>
+        /// <param name="edgeProcessing">Gestion des bords de l'image.</param>
+        /// <returns></returns>
         public static ImagePSI ApplyKernel(this ImagePSI image, float[,] kernel, KernelOrigin origin = KernelOrigin.Center, EdgeProcessing edgeProcessing = EdgeProcessing.KernelCrop)
         {
             if (kernel == null)

@@ -6,6 +6,9 @@ using System.Text;
 
 namespace KayoEditor
 {
+    /// <summary>
+    /// Représente une image de profondeur 24-bits (composantes R, G et B).
+    /// </summary>
     public class ImagePSI                               // en hexadécimal
     {
         public const int OFFSET_TYPE = 0x00;            // type de l'image
@@ -38,9 +41,13 @@ namespace KayoEditor
         public byte[] RawHeader => rawHeader;
         public byte[] RawPixels => rawPixels;
 
+        /// <summary>
+        /// Créé une instance d'<see cref="ImagePSI"/> à partir d'un fichier.
+        /// </summary>
+        /// <param name="filename">Chemin de l'image à ouvrir.</param>
         public ImagePSI(string filename)
         {
-            using (FileStream stream = File.OpenRead(filename))     // appelle stream.Close() automatiquement
+            using (FileStream stream = File.OpenRead(filename))     // using appelle stream.Close() automatiquement
             {
                 rawHeader = stream.ReadBytes(54);
 
@@ -50,10 +57,16 @@ namespace KayoEditor
                 if (ColorDepth != 24)   
                     throw new FormatException("KayoEditor can only load images with a depth of 24 bits");
 
-                rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));    // principe de stream : ne peut lire qu'une seule fois chaque octet (donc à la position 54 à ce moment là)
+                rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));    
             }
         }
 
+        /// <summary>
+        /// Créé une instance d'<see cref="ImagePSI"/> à partir d'une hauteur et d'une largeur.
+        /// L'image est automatiquement remplie de noir (composantes à 0).
+        /// </summary>
+        /// <param name="width">Largeur de l'image.</param>
+        /// <param name="height">Hauteur de l'image.</param>
         public ImagePSI(int width, int height)
         {
             rawHeader = new byte[54];
@@ -72,6 +85,10 @@ namespace KayoEditor
             rawHeader.InsertBytes(Utils.UIntToLittleEndian((uint)(rawHeader.Length + rawPixels.Length)), OFFSET_FILESIZE);
         }
 
+        /// <summary>
+        /// Créé une copie d'une instance d'<see cref="ImagePSI"/>.
+        /// </summary>
+        /// <param name="original"><see cref="ImagePSI"/> à copier.</param>
         public ImagePSI(ImagePSI original)
         {
             rawHeader = new byte[original.rawHeader.Length];
@@ -81,12 +98,24 @@ namespace KayoEditor
             Array.Copy(original.rawPixels, rawPixels, rawPixels.Length);
         }
 
+        /// <summary>
+        /// Créé une copie de cette instance d'<see cref="ImagePSI"/>
+        /// </summary>
+        /// <returns>Une nouvelle instance d'<see cref="ImagePSI"/> avec les même <see cref="Pixel"/>s.</returns>
         public ImagePSI Copy()
         {
             return new ImagePSI(this);
         }
 
+
         private int _position(int x, int y) => x * 3 + (Height - y - 1) * Stride;           // position du premier octet décrivant ce pixel
+
+        /// <summary>
+        /// Récupère le <see cref="Pixel"/> à une position donnée. 
+        /// </summary>
+        /// <param name="x">Position *x*.</param>
+        /// <param name="y">Position *y*.</param>
+        /// <returns></returns>
         public Pixel this[int x, int y] // la propriété c'est l'instance elle-même      similaire à static bool operator ==(...)
         { // imageOriginale[x, y] <=> imageOriginale._pixels[y, x]
             get
@@ -104,6 +133,10 @@ namespace KayoEditor
             }
         }
 
+        /// <summary>
+        /// Sauvegarde une instance d'<see cref="ImagePSI"/> dans un fichier. 
+        /// </summary>
+        /// <param name="filename">Chemin de l'image à sauvegarder.</param>
         public void Save(string filename)
         {
             using (FileStream stream = File.OpenWrite(filename))
@@ -113,6 +146,10 @@ namespace KayoEditor
             }
         }
 
+        /// <summary>
+        /// Transforme l'instance d'<see cref="ImagePSI"/> en nuances de gris.
+        /// </summary>
+        /// <returns></returns>
         public ImagePSI Greyscale()
         {
             ImagePSI result = this.Copy();
@@ -128,6 +165,10 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Transforme l'instance d'<see cref="ImagePSI"/> en noir et blanc. 
+        /// </summary>
+        /// <returns></returns>
         public ImagePSI BlackAndWhite()
         {
             ImagePSI result = this.Copy();
@@ -143,6 +184,10 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Obtient le négatif de l'instance d'<see cref="ImagePSI"/>. 
+        /// </summary>
+        /// <returns></returns>
         public ImagePSI Negative()
         {
             ImagePSI result = this.Copy();
@@ -159,6 +204,10 @@ namespace KayoEditor
             return result;
         }
         
+        /// <summary>
+        /// Inverse les composantes R et B de chaque <see cref="Pixel"/> de l'image.
+        /// </summary>
+        /// <returns></returns>
         public ImagePSI Invert()
         {
             ImagePSI result = this.Copy();
@@ -175,6 +224,11 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Cache une image dans l'instance d'<see cref="ImagePSI"/>.
+        /// </summary>
+        /// <param name="imageToHide">Image à cacher.</param>
+        /// <returns></returns>
         public ImagePSI HideImageInside(ImagePSI imageToHide)
         {
             ImagePSI result = this.Copy();
@@ -211,6 +265,13 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Produit l'histogramme de l'instance d'<see cref="ImagePSI"/>.
+        /// </summary>
+        /// <param name="channel_r">Inclure la composante rouge.</param>
+        /// <param name="channel_g">Inclure la composante verte.</param>
+        /// <param name="channel_b">Inclure la composante bleue.</param>
+        /// <returns></returns>
         public ImagePSI Histogram(bool channel_r = true, bool channel_g = true, bool channel_b = true)
         {
             ImagePSI result = new ImagePSI(256, 100);
@@ -238,9 +299,9 @@ namespace KayoEditor
 
             int[] perc_r = new int[256];
             int[] perc_g = !channel_g ? null : g.Select(x => x * 100 / max).ToArray(); // sélect = boucle for pour chaque valeur du tableau
-            int[] perc_b = !channel_b ? null : b.Select(x => x * 100 / max).ToArray();
+            int[] perc_b = !channel_b ? null : b.Select(x => x * 100 / max).ToArray(); // on transforme chaque valeur en pourcentage par rapport au max
 
-            if(channel_r)
+            if(channel_r)   // alternative au Select
             {
                 for (int i = 0; i < 256; i++)
                 {
@@ -259,6 +320,10 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Récupère l'image cachée dans l'instance d'<see cref="ImagePSI"/>.
+        /// </summary>
+        /// <returns></returns>
         public ImagePSI GetHiddenImage()
         {
             ImagePSI result = this.Copy();
@@ -275,6 +340,11 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Tourne l'instance de l'<see cref="ImagePSI"/> selon un angle donné.
+        /// </summary>
+        /// <param name="angle">Angle de la rotation en degrés.</param>
+        /// <returns></returns>
         public ImagePSI Rotate(int angle)
         {
             double rad = angle * (double)Math.PI / 180;
@@ -303,6 +373,11 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Agrandit/rétrécit l'instance d'<see cref="ImagePSI"/> selon le facteur donné.
+        /// </summary>
+        /// <param name="scale">Facteur d'agrandissement/de rétrécissement.</param>
+        /// <returns></returns>
         public ImagePSI Scale(float scale)
         {
             if (scale == 0)
@@ -325,7 +400,7 @@ namespace KayoEditor
             if (newHeight == 0)
                 newHeight = 1;
 
-            if(scale < 1)
+            /*if(scale < 1)
             {
                 // si on réduit, on met dans les pixels en haut à gauche de chaque groupe la moyenne des pixels du groupe
 
@@ -342,7 +417,7 @@ namespace KayoEditor
                 }
 
                 source = source.ApplyKernel(kernel, Convolution.KernelOrigin.TopLeft, Convolution.EdgeProcessing.Extend);
-            }
+            }*/
 
             ImagePSI result = new ImagePSI(newWidth, newHeight);
 
@@ -357,6 +432,11 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Applique un effet miroir sur l'instance d'<see cref="ImagePSI"/>.
+        /// </summary>
+        /// <param name="mode">Direction de l'effet.</param>
+        /// <returns></returns>
         public ImagePSI Flip(FlipMode mode)
         {
             ImagePSI result = this.Copy();
@@ -380,8 +460,35 @@ namespace KayoEditor
 
             return result;
         }
+
+        private static Pixel BackgroundFilterPixel = new Pixel(242, 255, 0);
+        public ImagePSI Innovation(ImagePSI filtre)
+        {
+            ImagePSI result = this.Copy();
+            filtre = filtre.Scale((float)this.Width / filtre.Width);
+
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = BackgroundFilterPixel;
+                    if(x < filtre.Width && y < filtre.Height)
+                        pixel = filtre[x, y];
+
+                    if (pixel == BackgroundFilterPixel)
+                    {
+                        pixel = this[x, y];
+                    }
+
+                    result[x, y] = pixel;
+                }
+            }
+
+            return result;
+        }
     }
 
+   
     public enum FlipMode
     {
         [Description("Inverser les X")]

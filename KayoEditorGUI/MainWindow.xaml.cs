@@ -525,6 +525,20 @@ namespace KayoEditorGUI
             DragDropView.Visibility = Visibility.Collapsed;
             Grid_WelcomeScreen.IsHitTestVisible = true;
         }
+
+        private void TransformFilter_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ImagePSI Filtre = new ImagePSI("Filtre_coeurs.bmp"); // Filtre_TEST
+                resultImage = ProgressPopup.Compute(() => resultImage.Innovation(Filtre), "Appliquation du filtre...");
+                resultImageDisplay.UpdateImage(resultImage);
+            }
+            catch (Exception exception)
+            {
+                ShowException(exception, "Impossible d'appliquer le filtre sur l'image");
+            }
+        } 
     }
 
     public enum HistogramChannel
