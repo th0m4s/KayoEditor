@@ -512,6 +512,34 @@ namespace KayoEditor
 
             return result;
         }
+
+        public static bool operator ==(ImagePSI a, ImagePSI b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
+                return false;
+
+            if (a.Width != b.Width || a.Height != b.Height)
+                return false;
+
+            for (int x = 0; x < a.Width; x++)
+            {
+                for (int y = 0; y < a.Height; y++)
+                {
+                    if (a[x, y] != b[x, y])
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool operator !=(ImagePSI a, ImagePSI b)
+        {
+            return !(a == b);
+        }
     }
 
    
