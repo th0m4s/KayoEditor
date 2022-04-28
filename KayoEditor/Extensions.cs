@@ -10,7 +10,7 @@ namespace KayoEditor
         /// <param name="stream">Instance du flux à lire.</param>
         /// <param name="length">Nombre *n* d'octets à recupérer.</param>
         /// <returns>Un tableau de *n* octets provenant de ce flux.</returns>
-        public static byte[] ReadBytes(this FileStream stream, int length) // ReadBytes(stream, 3) <=> stream.ReadBytes(3)
+        public static byte[] ReadBytes(this Stream stream, int length) // ReadBytes(stream, 3) <=> stream.ReadBytes(3)
         {
             byte[] array = new byte[length];
             for (int i = 0; i < length; i++)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -139,7 +141,7 @@ namespace KayoEditorGUI
             if (dialog.ShowDialog() == true)
                 LoadImage(dialog.FileName);
         }
-
+        
         private void LoadImage(string filename)
         {
             if(File.Exists(filename))
@@ -184,6 +186,11 @@ namespace KayoEditorGUI
 
             if (dialog.ShowDialog() == true)
                 SaveImage(dialog.FileName);
+        }
+
+        private string[] GetResourcesNames(string category)
+        {
+            return Assembly.GetExecutingAssembly().GetManifestResourceNames().Where(x => x.Contains("images." + category + ".") && x.EndsWith(".bmp")).ToArray();
         }
 
         private void SaveImage(string filename)
@@ -526,17 +533,26 @@ namespace KayoEditorGUI
             Grid_WelcomeScreen.IsHitTestVisible = true;
         }
 
-        private void TransformFilter_Click(object sender, RoutedEventArgs e)
+        private void TransformSticker_Click(object sender, RoutedEventArgs e)
         {
-            try
+            QuestionPopup popup = new QuestionPopup("Choisir un sticker :");
+            string[] resources = GetResourcesNames("stickers");
+            string stickerName = popup.AskValue(resources, resources.Select(x => x.Split('.')[3]).ToArray());
+
+            if(popup.Confirmed)
             {
-                ImagePSI Filtre = new ImagePSI("Filtre_coeurs.bmp"); // Filtre_TEST
-                resultImage = ProgressPopup.Compute(() => resultImage.Innovation(Filtre), "Appliquation du filtre...");
-                resultImageDisplay.UpdateImage(resultImage);
-            }
-            catch (Exception exception)
-            {
-                ShowException(exception, "Impossible d'appliquer le filtre sur l'image");
+                try
+                {
+                    ImagePSI sticker = new ImagePSI(Assembly.GetExecutingAssembly().GetManifestResourceStream(stickerName));
+                    sticker = sticker.ReplaceColor(new Pixel(0), currentPaintColor);
+                    
+                    resultImage = ProgressPopup.Compute(() => resultImage.AddSticker(sticker), "Application du sticker...");
+                    resultImageDisplay.UpdateImage(resultImage);
+                }
+                catch (Exception exception)
+                {
+                    ShowException(exception, "Impossible d'appliquer le sticker sur l'image");
+                }
             }
         } 
     }

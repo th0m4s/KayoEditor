@@ -121,7 +121,7 @@
                         <Button Name="TransformNegativeButton" Click="TransformNegative_Click" Content="Négatif" />
                         <Button Name="TransformKernelButton" Click="TransformKernel_Click" Content="Appliquer un filtre" />
                         <Button Name="TransformHistoButton" Click="TransformHisto_Click" Content="Histogramme" />
-                        <Button Name="TransformFilterButton" Click="TransformFilter_Click" Content="Filtre" />
+                        <Button Name="TransformStickerButton" Click="TransformSticker_Click" Content="Ajouter un sticker" />
                         <Button Name="TransformReadQRButton" Click="TransformReadQR_Click" Content="Lire un QR code" />
                         <StackPanel Orientation="Horizontal">
                             <Button Name="TransformEncodeButton" Click="TransformEncode_Click" Content="Coder" Margin="0,3,5,3" />

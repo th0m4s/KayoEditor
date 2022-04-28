@@ -68,5 +68,15 @@ namespace KayoEditor
         {
             return "(" + R + ", " + G + ", " + B + ")";
         }
+
+        public static bool operator ==(Pixel a, Pixel b)
+        {
+            return a.r == b.r && a.g == b.g && a.b == b.b;
+        }
+
+        public static bool operator !=(Pixel a, Pixel b)
+        {
+            return !(a == b);
+        }
     }
 }

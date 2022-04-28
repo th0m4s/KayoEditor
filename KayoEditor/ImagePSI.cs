@@ -49,16 +49,26 @@ namespace KayoEditor
         {
             using (FileStream stream = File.OpenRead(filename))     // using appelle stream.Close() automatiquement
             {
-                rawHeader = stream.ReadBytes(54);
-
-                if (Type != "BM")
-                    throw new FormatException("invalid magic file type!");
-
-                if (ColorDepth != 24)   
-                    throw new FormatException("KayoEditor can only load images with a depth of 24 bits");
-
-                rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));    
+                ConsumeStream(stream);
             }
+        }
+
+        public ImagePSI(Stream stream)
+        {
+            ConsumeStream(stream);
+        }
+
+        private void ConsumeStream(Stream stream)
+        {
+            rawHeader = stream.ReadBytes(54);
+
+            if (Type != "BM")
+                throw new FormatException("invalid magic file type!");
+
+            if (ColorDepth != 24)
+                throw new FormatException("KayoEditor can only load images with a depth of 24 bits");
+
+            rawPixels = stream.ReadBytes((int)(FileSize - StartOffset));
         }
 
         /// <summary>
@@ -461,21 +471,37 @@ namespace KayoEditor
             return result;
         }
 
-        private static Pixel BackgroundFilterPixel = new Pixel(242, 255, 0);
-        public ImagePSI Innovation(ImagePSI filtre)
+        public ImagePSI ReplaceColor(Pixel input, Pixel output)
         {
             ImagePSI result = this.Copy();
-            filtre = filtre.Scale((float)this.Width / filtre.Width);
 
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    Pixel pixel = BackgroundFilterPixel;
-                    if(x < filtre.Width && y < filtre.Height)
-                        pixel = filtre[x, y];
+                    if (this[x, y] == input)
+                        result[x, y] = output;
+                }
+            }
 
-                    if (pixel == BackgroundFilterPixel)
+            return result;
+        }
+
+        private static Pixel BackgroundStickerPixel = new Pixel(230, 14, 249);
+        public ImagePSI AddSticker(ImagePSI sticker)
+        {
+            ImagePSI result = this.Copy();
+            sticker = sticker.Scale((float)this.Width / sticker.Width);
+
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Pixel pixel = BackgroundStickerPixel;
+                    if(x < sticker.Width && y < sticker.Height)
+                        pixel = sticker[x, y];
+
+                    if (pixel == BackgroundStickerPixel)
                     {
                         pixel = this[x, y];
                     }

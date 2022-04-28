@@ -8,6 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\stickers\flame.bmp" />
+    <None Remove="images\stickers\heart.bmp" />
+    <None Remove="images\stickers\kayo.bmp" />
+    <None Remove="images\stickers\kayo_characters.bmp" />
+    <None Remove="images\stickers\kayo_text.bmp" />
+    <None Remove="images\stickers\sun.bmp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="images\stickers\flame.bmp" />
+    <EmbeddedResource Include="images\stickers\heart.bmp" />
+    <EmbeddedResource Include="images\stickers\kayo_characters.bmp" />
+    <EmbeddedResource Include="images\stickers\kayo_text.bmp" />
+    <EmbeddedResource Include="images\stickers\sun.bmp" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CalcBinding" Version="2.5.2" />
   </ItemGroup>
 
