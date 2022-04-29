@@ -5,11 +5,10 @@ namespace KayoEditor
     class Utils
     {
         /// <summary>
-        /// Transforme un tableau d'octets en uint.
+        /// Transforme un tableau d'octets en <see cref="uint"/>.
         /// </summary>
         /// <param name="array">Tableau d'octets à convertir.</param>
         /// <param name="offset">Position de départ.</param>
-        /// <returns></returns>
         public static uint LittleEndianToUInt(byte[] array, int offset = 0)
         {
             uint res = 0;
@@ -20,11 +19,10 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme un tableau d'octets en int.
+        /// Transforme un tableau d'octets en <see cref="int"/>.
         /// </summary>
         /// <param name="array">Tableau d'octets à convertir.</param>
         /// <param name="offset">Position de départ.</param>
-        /// <returns></returns>
         public static int LittleEndianToInt(byte[] array, int offset = 0)
         {
             int res = 0;
@@ -35,11 +33,10 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme un tableau d'octets en ushort.
+        /// Transforme un tableau d'octets en <see cref="ushort"/>.
         /// </summary>
         /// <param name="array">Tableau d'octets à convertir.</param>
         /// <param name="offset">Position de départ.</param>
-        /// <returns></returns>
         public static ushort LittleEndianToUShort(byte[] array, int offset = 0)
         {
             ushort res = 0;
@@ -50,11 +47,10 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme un tableau d'octets en short.
+        /// Transforme un tableau d'octets en <see cref="short"/>.
         /// </summary>
         /// <param name="array">Tableau d'octets à convertir.</param>
         /// <param name="offset">Position de départ.</param>
-        /// <returns></returns>
         public static short LittleEndianToShort(byte[] array, int offset = 0)
         {
             short res = 0;
@@ -63,12 +59,11 @@ namespace KayoEditor
 
             return res;
         }
-
+        
         /// <summary>
-        /// Transforme un int en tableau d'octets.
+        /// Transforme un <see cref="int"/> en tableau d'octets.
         /// </summary>
-        /// <param name="value">int à convertir.</param>
-        /// <returns></returns>
+        /// <param name="value">Valeur à convertir.</param>
         public static byte[] IntToLittleEndian(int value)
         {
             byte[] result = new byte[4];
@@ -82,10 +77,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme un uint en tableau d'octets.
+        /// Transforme un <see cref="uint"/> en tableau d'octets.
         /// </summary>
-        /// <param name="value">uint à convertir.</param>
-        /// <returns></returns>
+        /// <param name="value">Valeur à convertir.</param>
         public static byte[] UIntToLittleEndian(uint value)
         {
             byte[] result = new byte[4];
@@ -99,10 +93,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme un short en tableau d'octets.
+        /// Transforme un <see cref="short"/> en tableau d'octets.
         /// </summary>
         /// <param name="value">short à convertir.</param>
-        /// <returns></returns>
         public static byte[] ShortToLittleEndian(short value)
         {
             byte[] result = new byte[2];
@@ -116,10 +109,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme un ushort en tableau d'octets.
+        /// Transforme un <see cref="ushort"/> en tableau d'octets.
         /// </summary>
         /// <param name="value">ushort à convertir.</param>
-        /// <returns></returns>
         public static byte[] UShortToLittleEndian(ushort value)
         {
             byte[] result = new byte[2];

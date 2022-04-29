@@ -42,7 +42,7 @@ namespace KayoEditor
         public byte[] RawPixels => rawPixels;
 
         /// <summary>
-        /// Créé une instance d'<see cref="ImagePSI"/> à partir d'un fichier.
+        /// Créé une instance d'<see cref="ImagePSI"/> à partir d'un fichier référencé par <paramref name="filename"/>.
         /// </summary>
         /// <param name="filename">Chemin de l'image à ouvrir.</param>
         public ImagePSI(string filename)
@@ -53,11 +53,20 @@ namespace KayoEditor
             }
         }
 
+        /// <summary>
+        /// Créé une instance d'<see cref="ImagePSI"/> dont le contenu est recupéré depuis le flux <paramref name="stream"/>.
+        /// </summary>
+        /// <param name="stream">Un <see cref="Stream"/> contenant les informations sur l'image.</param>
         public ImagePSI(Stream stream)
         {
             ConsumeStream(stream);
         }
 
+        /// <summary>
+        /// Consomme le flux <paramref name="stream"/> et remplit les attributs de cette <see cref="ImagePSI"/>.
+        /// </summary>
+        /// <param name="stream">Le <see cref="Stream"/> depuis lequel récupérer les attributs.</param>
+        /// <exception cref="FormatException">Le flux ne contient pas une image BMP reconnaissable par <i>KayoEditor</i>.</exception>
         private void ConsumeStream(Stream stream)
         {
             rawHeader = stream.ReadBytes(54);
@@ -72,8 +81,8 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Créé une instance d'<see cref="ImagePSI"/> à partir d'une hauteur et d'une largeur.
-        /// L'image est automatiquement remplie de noir (composantes à 0).
+        /// Créé une instance d'<see cref="ImagePSI"/> à partir d'une hauteur <paramref name="height"/> et d'une largeur <paramref name="width"/>.
+        /// <br/>L'image est automatiquement remplie de noir (composantes à 0).
         /// </summary>
         /// <param name="width">Largeur de l'image.</param>
         /// <param name="height">Hauteur de l'image.</param>
@@ -109,23 +118,29 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Créé une copie de cette instance d'<see cref="ImagePSI"/>
+        /// Créé une copie de cette instance d'<see cref="ImagePSI"/>.
         /// </summary>
         /// <returns>Une nouvelle instance d'<see cref="ImagePSI"/> avec les même <see cref="Pixel"/>s.</returns>
+        /// <seealso cref="ImagePSI(ImagePSI)"/>
         public ImagePSI Copy()
         {
             return new ImagePSI(this);
         }
 
-
+        /// <summary>
+        /// Calcule la position du 1er octet représentant le pixel à la position (<paramref name="x"/>, <paramref name="y"/>).
+        /// </summary>
+        /// <param name="x">Position <i>x</i> du pixel.</param>
+        /// <param name="y">Position <i>x</i> du pixel.</param>
+        /// <returns>La position du 1er octet représentant ce pixel.</returns>
         private int _position(int x, int y) => x * 3 + (Height - y - 1) * Stride;           // position du premier octet décrivant ce pixel
 
         /// <summary>
         /// Récupère le <see cref="Pixel"/> à une position donnée. 
         /// </summary>
-        /// <param name="x">Position *x*.</param>
-        /// <param name="y">Position *y*.</param>
-        /// <returns></returns>
+        /// <param name="x">Position <i>x</i>.</param>
+        /// <param name="y">Position <i>y</i>.</param>
+        /// <returns>Le <see cref="Pixel"/> contenant la couleur présente à la position donnée.</returns>
         public Pixel this[int x, int y] // la propriété c'est l'instance elle-même      similaire à static bool operator ==(...)
         { // imageOriginale[x, y] <=> imageOriginale._pixels[y, x]
             get
@@ -144,7 +159,7 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Sauvegarde une instance d'<see cref="ImagePSI"/> dans un fichier. 
+        /// Sauvegarde cette <see cref="ImagePSI"/> dans le fichier indiqué par <paramref name="filename"/>. 
         /// </summary>
         /// <param name="filename">Chemin de l'image à sauvegarder.</param>
         public void Save(string filename)
@@ -157,9 +172,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme l'instance d'<see cref="ImagePSI"/> en nuances de gris.
+        /// Transforme cette <see cref="ImagePSI"/> en nuances de gris (cette méthode créé une copie).
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Une copie en nuances de gris de cette <see cref="ImagePSI"/>.</returns>
         public ImagePSI Greyscale()
         {
             ImagePSI result = this.Copy();
@@ -176,9 +191,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Transforme l'instance d'<see cref="ImagePSI"/> en noir et blanc. 
+        /// Transforme cette <see cref="ImagePSI"/> en noir et blanc (cette méthode créé une copie).
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Une copie en noir et blanc de cette <see cref="ImagePSI"/>.</returns>
         public ImagePSI BlackAndWhite()
         {
             ImagePSI result = this.Copy();
@@ -195,9 +210,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Obtient le négatif de l'instance d'<see cref="ImagePSI"/>. 
+        /// Obtient le négatif de cette <see cref="ImagePSI"/> (cette méthode créé une copie).
         /// </summary>
-        /// <returns></returns>
+        /// <returns>La copie en négatif de cette <see cref="ImagePSI"/>.</returns>
         public ImagePSI Negative()
         {
             ImagePSI result = this.Copy();
@@ -215,9 +230,9 @@ namespace KayoEditor
         }
         
         /// <summary>
-        /// Inverse les composantes R et B de chaque <see cref="Pixel"/> de l'image.
+        /// Inverse les composantes R et B de chaque <see cref="Pixel"/> de l'image (cette méthode créé une copie).
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Une copie de cette <see cref="ImagePSI"/> avec les composantes R et B inversées.</returns>
         public ImagePSI Invert()
         {
             ImagePSI result = this.Copy();
@@ -235,10 +250,10 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Cache une image dans l'instance d'<see cref="ImagePSI"/>.
+        /// Cache une image <paramref name="imageToHide"/> dans cette <see cref="ImagePSI"/>.
         /// </summary>
         /// <param name="imageToHide">Image à cacher.</param>
-        /// <returns></returns>
+        /// <returns>Une copie de l'<see cref="ImagePSI"/> originale contenant les informations de <paramref name="imageToHide"/>.</returns>
         public ImagePSI HideImageInside(ImagePSI imageToHide)
         {
             ImagePSI result = this.Copy();
@@ -276,12 +291,12 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Produit l'histogramme de l'instance d'<see cref="ImagePSI"/>.
+        /// Produit l'histogramme de cette <see cref="ImagePSI"/>.
         /// </summary>
         /// <param name="channel_r">Inclure la composante rouge.</param>
         /// <param name="channel_g">Inclure la composante verte.</param>
         /// <param name="channel_b">Inclure la composante bleue.</param>
-        /// <returns></returns>
+        /// <returns>Un histogramme de cette <see cref="ImagePSI"/>.</returns>
         public ImagePSI Histogram(bool channel_r = true, bool channel_g = true, bool channel_b = true)
         {
             ImagePSI result = new ImagePSI(256, 100);
@@ -331,9 +346,9 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Récupère l'image cachée dans l'instance d'<see cref="ImagePSI"/>.
+        /// Récupère l'image cachée dans cette <see cref="ImagePSI"/> par <see cref="HideImageInside(ImagePSI)"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>L'image cachée par <see cref="HideImageInside(ImagePSI)"/>.</returns>
         public ImagePSI GetHiddenImage()
         {
             ImagePSI result = this.Copy();
@@ -351,10 +366,10 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Tourne l'instance de l'<see cref="ImagePSI"/> selon un angle donné.
+        /// Tourne l'instance de l'<see cref="ImagePSI"/> selon <paramref name="angle"/>.
         /// </summary>
         /// <param name="angle">Angle de la rotation en degrés.</param>
-        /// <returns></returns>
+        /// <returns>Une copie de cette <see cref="ImagePSI"/> tournée de <paramref name="angle"/> degrés.</returns>
         public ImagePSI Rotate(int angle)
         {
             double rad = angle * (double)Math.PI / 180;
@@ -384,10 +399,11 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Agrandit/rétrécit l'instance d'<see cref="ImagePSI"/> selon le facteur donné.
+        /// Agrandit/rétrécit cette <see cref="ImagePSI"/> selon le facteur <paramref name="scale"/>.
         /// </summary>
         /// <param name="scale">Facteur d'agrandissement/de rétrécissement.</param>
-        /// <returns></returns>
+        /// <returns>Une copie agrandie/rétrécie de cette <see cref="ImagePSI"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Si <paramref name="scale"/> est inférieur ou égal à 0.</exception>
         public ImagePSI Scale(float scale)
         {
             if (scale == 0)
@@ -443,10 +459,10 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Applique un effet miroir sur l'instance d'<see cref="ImagePSI"/>.
+        /// Applique un effet miroir sur cette <see cref="ImagePSI"/> (cette méthode créé une copie).
         /// </summary>
         /// <param name="mode">Direction de l'effet.</param>
-        /// <returns></returns>
+        /// <returns>Une copie de cette <see cref="ImagePSI"/> avec l'effet miroir sur la direction <paramref name="mode"/>.</returns>
         public ImagePSI Flip(FlipMode mode)
         {
             ImagePSI result = this.Copy();
@@ -471,6 +487,12 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Remplace une couleur <paramref name="input"/> par une autre couleur <paramref name="output"/> (cette méthode créé une copie).
+        /// </summary>
+        /// <param name="input">La couleur à remplacer.</param>
+        /// <param name="output">Nouvelle couleur de remplacement.</param>
+        /// <returns>Une copie de cette <see cref="ImagePSI"/> ne contenant plus la couleur <paramref name="input"/>.</returns>
         public ImagePSI ReplaceColor(Pixel input, Pixel output)
         {
             ImagePSI result = this.Copy();
@@ -488,6 +510,11 @@ namespace KayoEditor
         }
 
         private static Pixel BackgroundStickerPixel = new Pixel(230, 14, 249);
+        /// <summary>
+        /// Ajoute un <paramref name="sticker"/> sur cette <see cref="ImagePSI"/> (cette méthode créé une copie).
+        /// </summary>
+        /// <param name="sticker"><see cref="ImagePSI"/> à rajouter.</param>
+        /// <returns>Une copie de cette <see cref="ImagePSI"/> contenant le sticker.</returns>
         public ImagePSI AddSticker(ImagePSI sticker)
         {
             ImagePSI result = this.Copy();
@@ -513,6 +540,10 @@ namespace KayoEditor
             return result;
         }
 
+        /// <summary>
+        /// Vérifie l'égalité entre 2 <see cref="ImagePSI"/> (taille et <see cref="Pixel"/>s identiques).
+        /// </summary>
+        /// <seealso cref="Equals(ImagePSI)"/>
         public static bool operator ==(ImagePSI a, ImagePSI b)
         {
             if (ReferenceEquals(a, b))
@@ -536,9 +567,28 @@ namespace KayoEditor
             return true;
         }
 
+        /// <summary>
+        /// Vérifie l'inégalité entre 2 <see cref="ImagePSI"/> (taille ou <see cref="Pixel"/>s différents).
+        /// </summary>
+        /// <seealso cref="operator ==(ImagePSI, ImagePSI)"/>
         public static bool operator !=(ImagePSI a, ImagePSI b)
         {
             return !(a == b);
+        }
+
+        /// <summary>
+        /// Vérifie l'égalité de cette <see cref="ImagePSI"/> avec <paramref name="other"/>.
+        /// </summary>
+        /// <seealso cref="operator ==(ImagePSI, ImagePSI)"/>
+        public override bool Equals(object other)
+        {
+            return other is ImagePSI && this == (ImagePSI)other;
+        }
+
+        public override int GetHashCode()
+        {
+            // méthode pour enlever le warning à cause des opérateurs == et !=.
+            return base.GetHashCode();
         }
     }
 

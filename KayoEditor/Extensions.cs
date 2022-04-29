@@ -5,11 +5,11 @@ namespace KayoEditor
     public static class Extensions
     {
         /// <summary>
-        /// Lit *n* octets depuis le flux d'entrée.
+        /// Lit <paramref name="length"/> octets depuis le flux d'entrée.
         /// </summary>
         /// <param name="stream">Instance du flux à lire.</param>
-        /// <param name="length">Nombre *n* d'octets à recupérer.</param>
-        /// <returns>Un tableau de *n* octets provenant de ce flux.</returns>
+        /// <param name="length">Nombre <i>n</i> d'octets à recupérer.</param>
+        /// <returns>Un tableau de <paramref name="length"/> octets provenant de ce flux.</returns>
         public static byte[] ReadBytes(this Stream stream, int length) // ReadBytes(stream, 3) <=> stream.ReadBytes(3)
         {
             byte[] array = new byte[length];
@@ -28,7 +28,7 @@ namespace KayoEditor
         /// <param name="array">Tableau source.</param>
         /// <param name="length">Nombre d'octets à extraire.</param>
         /// <param name="offset">Position à partir de laquelle extraire ces octets.</param>
-        /// <returns>Un tableau contenant les octets extraits.</returns>
+        /// <returns>Un tableau contenant <paramref name="length"/> octets extraits.</returns>
         public static byte[] ExtractBytes(this byte[] array, int length, int offset = 0)
         {
             byte[] bytes = new byte[length];
@@ -39,7 +39,7 @@ namespace KayoEditor
         }
 
         /// <summary>
-        /// Modifie une partie d'un tableau d'octets à partir d'un autre tableau d'octets.
+        /// Modifie une partie d'un tableau d'octets à partir d'un autre tableau d'octets <paramref name="data"/>.
         /// </summary>
         /// <param name="array">Tableau d'octets à modifier.</param>
         /// <param name="data">Tableau d'octets à inserer.</param>

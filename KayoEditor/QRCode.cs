@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ReedSolomon;
 
 namespace KayoEditor
@@ -69,7 +67,7 @@ namespace KayoEditor
         /// Génère un QRCode à partir de la chaîne de caractères donnée.
         /// </summary>
         /// <param name="text">Texte à encoder.</param>
-        /// <returns>Une <i>ImagePSI</i> représentant le QRCode.</returns>
+        /// <returns>Une <see cref="ImagePSI"/> représentant le QRCode.</returns>
         public static ImagePSI GenerateQRCode(string text)
         {
             if (!strictRegex.IsMatch(text))
@@ -240,7 +238,7 @@ namespace KayoEditor
         /// <summary>
         /// Lit le contenu du QRCode sous forme de chaîne de caractères.
         /// </summary>
-        /// <param name="qrcode">Le QRCode à décoder sous forme d'<i>ImagePSI</i>.</param>
+        /// <param name="qrcode">Le QRCode à décoder sous forme d'<see cref="ImagePSI"/>.</param>
         /// <returns>Le texte obtenu à partir de l'image.</returns>
         public static string ReadQRCode(ImagePSI qrcode)
         {

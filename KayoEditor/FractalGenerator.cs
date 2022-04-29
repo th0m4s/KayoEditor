@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace KayoEditor
 {
     public class FractalGenerator
     {      
         /// <summary>
-        /// Génère une fractale de Julia à partir d'un complexe donné.
+        /// Génère une fractale de Julia à partir du complexe <paramref name="c"/>.
         /// </summary>
         /// <param name="width">Largeur de l'image à générer.</param>
         /// <param name="height">Hauteur de l'image à générer.</param>
         /// <param name="c">Complexe définissant le motif de la fractale.</param>
-        /// <returns>Une *ImagePSI* contenant la fractale générée.</returns>
+        /// <returns>Une <see cref="ImagePSI"/> contenant la fractale générée.</returns>
         public static ImagePSI GenerateFractal(int width, int height, Complex c)
         {
             Pixel[] colors = Enumerable.Range(0, 256).Select(c => new Pixel((byte)((c >> 5) * 36), (byte)((c >> 3 & 7) * 36), (byte)((c & 3) * 85))).ToArray();
