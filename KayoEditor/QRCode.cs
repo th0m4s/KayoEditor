@@ -233,6 +233,11 @@ namespace KayoEditor
         private static Pixel GetPixelFromData(string data, int counter, int x, int y, int size)
         {
             return IntPixel(Math.Abs((counter < data.Length ? data[counter] : '0') - 48 - (x + size - y) % 2)); // ou - '0'
+            // le masque soustrait 1 ou 0, et le Math.Abs remet le -1 à 1
+            // si on a  0 et inversion : 0 - 1 = -1 => 1
+            //          1 et inversion : 1 - 1 =  0
+            //          0 et pas inversion : 0 - 0 = 0
+            //          1 et pas inversion : 1 - 0 = 1
         }
 
         /// <summary>
@@ -240,6 +245,7 @@ namespace KayoEditor
         /// </summary>
         /// <param name="qrcode">Le QRCode à décoder sous forme d'<see cref="ImagePSI"/>.</param>
         /// <returns>Le texte obtenu à partir de l'image.</returns>
+        /// <exception cref="FormatException">Si <paramref name="qrcode"/> ne contient pas un QRCode valide.</exception>
         public static string ReadQRCode(ImagePSI qrcode)
         {
             int version = 0;

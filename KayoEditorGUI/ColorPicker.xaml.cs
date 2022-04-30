@@ -176,19 +176,29 @@ namespace KayoEditorGUI
             {
                 if(selectedType == SelectedType.Hue)
                 {
-                    Point point = Mouse.GetPosition(HueGrid);
-                    h = (int)(Math.Max(0, Math.Min(1, point.X / HueGrid.ActualWidth)) * 360);
+                    UpdateMouseHue();
                 } else if(selectedType == SelectedType.SaturationValue)
                 {
-                    Point point = Mouse.GetPosition(ValueSaturationGrid);
-                    s = (int)(Math.Max(0, Math.Min(1, point.X / ValueSaturationGrid.ActualWidth)) * 100);
-                    v = (int)((1-Math.Max(0, Math.Min(1, point.Y / ValueSaturationGrid.ActualHeight))) * 100);
+                    UpdateMouseSatVal();
                 }
 
                 UpdateDisplay();
             }
 
             canMove = true;
+        }
+
+        private void UpdateMouseHue()
+        {
+            Point point = Mouse.GetPosition(HueGrid);
+            h = (int)(Math.Max(0, Math.Min(1, point.X / HueGrid.ActualWidth)) * 360);
+        }
+
+        private void UpdateMouseSatVal()
+        {
+            Point point = Mouse.GetPosition(ValueSaturationGrid);
+            s = (int)(Math.Max(0, Math.Min(1, point.X / ValueSaturationGrid.ActualWidth)) * 100);
+            v = (int)((1 - Math.Max(0, Math.Min(1, point.Y / ValueSaturationGrid.ActualHeight))) * 100);
         }
 
         private void Window_MouseUp(object sender, MouseButtonEventArgs e)
@@ -200,10 +210,19 @@ namespace KayoEditorGUI
         private void SliderSatVal_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (selectedType != SelectedType.None) return;
-
             selectedType = SelectedType.SaturationValue;
+            
             ((UIElement)sender).CaptureMouse();
         }
+
+        private void SatValDisplay_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (selectedType != SelectedType.None) return;
+            selectedType = SelectedType.SaturationValue;
+            
+            SliderSatVal.CaptureMouse();
+            UpdateMouseSatVal();
+        }        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -213,10 +232,19 @@ namespace KayoEditorGUI
         private void SliderHue_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (selectedType != SelectedType.None) return;
-
             selectedType = SelectedType.Hue;
+            
             ((UIElement)sender).CaptureMouse();
         }
+
+        private void HueDisplay_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (selectedType != SelectedType.None) return;
+            selectedType = SelectedType.Hue;
+
+            SliderHue.CaptureMouse();
+            UpdateMouseHue();
+        }        
 
         private static readonly Regex RegexHex = new Regex(@"^(#|)[a-fA-F0-9]{0,6}$");
         private static readonly Regex RegexRGB = new Regex(@"^([0-9]{0,2}|[01][0-9]{1,2}|2(5[0-5]|[0-4][0-9]))$"); // nombre entre 0 et 255

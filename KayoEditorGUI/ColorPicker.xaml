@@ -20,7 +20,7 @@
             <Grid Name="Contents" Margin="0,22,0,0">
                 <Grid Name="ValueSaturationGrid" Margin="5,5,130,26">
                     <Rectangle Fill="Black" />
-                    <Rectangle>
+                    <Rectangle Name="SatValDisplay" MouseDown="SatValDisplay_MouseDown">
                         <Rectangle.Fill>
                             <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
                                 <GradientStop Color="#FFFFFF" Offset="0" />
@@ -36,7 +36,7 @@
                     </Rectangle>
                 </Grid>
                 <Grid Name="HueGrid" Width="255" Height="15" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
-                    <Rectangle>
+                    <Rectangle Name="HueDisplay" MouseDown="HueDisplay_MouseDown">
                         <Rectangle.Fill>
                             <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5" x:Name="HueGradient">
                                 <GradientStop Color="#FF0000" Offset="0" />

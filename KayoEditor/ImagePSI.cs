@@ -402,9 +402,10 @@ namespace KayoEditor
         /// Agrandit/rétrécit cette <see cref="ImagePSI"/> selon le facteur <paramref name="scale"/>.
         /// </summary>
         /// <param name="scale">Facteur d'agrandissement/de rétrécissement.</param>
+        /// <param name="reduceAntiAliasing">Applique un anti-aliasing en cas de rétrécissement (<paramref name="scale"/> < 1).</param>
         /// <returns>Une copie agrandie/rétrécie de cette <see cref="ImagePSI"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Si <paramref name="scale"/> est inférieur ou égal à 0.</exception>
-        public ImagePSI Scale(float scale)
+        public ImagePSI Scale(float scale, bool reduceAntiAliasing = true)
         {
             if (scale == 0)
                 throw new ArgumentOutOfRangeException("scale", "scale must not be 0");
@@ -426,7 +427,7 @@ namespace KayoEditor
             if (newHeight == 0)
                 newHeight = 1;
 
-            /*if(scale < 1)
+            if(scale < 1 && reduceAntiAliasing)
             {
                 // si on réduit, on met dans les pixels en haut à gauche de chaque groupe la moyenne des pixels du groupe
 
@@ -443,7 +444,7 @@ namespace KayoEditor
                 }
 
                 source = source.ApplyKernel(kernel, Convolution.KernelOrigin.TopLeft, Convolution.EdgeProcessing.Extend);
-            }*/
+            }
 
             ImagePSI result = new ImagePSI(newWidth, newHeight);
 
@@ -518,7 +519,7 @@ namespace KayoEditor
         public ImagePSI AddSticker(ImagePSI sticker)
         {
             ImagePSI result = this.Copy();
-            sticker = sticker.Scale((float)this.Width / sticker.Width);
+            sticker = sticker.Scale((float)this.Width / sticker.Width, false);
 
             for (int x = 0; x < Width; x++)
             {
@@ -543,7 +544,7 @@ namespace KayoEditor
         /// <summary>
         /// Vérifie l'égalité entre 2 <see cref="ImagePSI"/> (taille et <see cref="Pixel"/>s identiques).
         /// </summary>
-        /// <seealso cref="Equals(ImagePSI)"/>
+        /// <seealso cref="Equals(object)"/>
         public static bool operator ==(ImagePSI a, ImagePSI b)
         {
             if (ReferenceEquals(a, b))
