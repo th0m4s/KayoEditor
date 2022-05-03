@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\base\bellpeper.bmp" />
+    <None Remove="images\base\damier.bmp" />
+    <None Remove="images\base\fox.bmp" />
+    <None Remove="images\base\lenna.bmp" />
+    <None Remove="images\base\marbles.bmp" />
+    <None Remove="images\base\patchwork.bmp" />
+    <None Remove="images\base\rickroll.bmp" />
+    <None Remove="images\icons\box.png" />
     <None Remove="images\stickers\flame.bmp" />
     <None Remove="images\stickers\heart.bmp" />
     <None Remove="images\stickers\kayo.bmp" />
@@ -17,6 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="images\base\bellpeper.bmp" />
+    <EmbeddedResource Include="images\base\damier.bmp" />
+    <EmbeddedResource Include="images\base\fox.bmp" />
+    <EmbeddedResource Include="images\base\lenna.bmp" />
+    <EmbeddedResource Include="images\base\marbles.bmp" />
+    <EmbeddedResource Include="images\base\patchwork.bmp" />
+    <EmbeddedResource Include="images\base\rickroll.bmp" />
     <EmbeddedResource Include="images\stickers\flame.bmp" />
     <EmbeddedResource Include="images\stickers\heart.bmp" />
     <EmbeddedResource Include="images\stickers\kayo_characters.bmp" />
@@ -31,6 +46,10 @@
   <ItemGroup>
     <ProjectReference Include="..\KayoEditor\KayoEditor.csproj" />
     <ProjectReference Include="..\ReedSolomon\ReedSolomon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\icons\box.png" />
   </ItemGroup>
 
   <ItemGroup>

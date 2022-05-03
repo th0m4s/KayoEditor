@@ -148,7 +148,7 @@ namespace KayoEditorGUI
             {
                 try
                 {
-                    ImagePSI loadingImage = new ImagePSI(filename);
+                    ImagePSI loadingImage = ProgressPopup.Compute(() => new ImagePSI(filename), "Chargement de l'image...");
 
                     if(loadedImage == null || MessagePopup.Show("Une image est déjà ouverte dans Kayo Editor !\nVoulez-vous charger cette nouvelle image ?", true, true) 
                         == MessagePopup.MessageResult.Continue)
@@ -554,7 +554,26 @@ namespace KayoEditorGUI
                     ShowException(exception, "Impossible d'appliquer le sticker sur l'image");
                 }
             }
-        } 
+        }
+
+        private void OpenImageLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            QuestionPopup popup = new QuestionPopup("Choisir une image :");
+            string[] resources = GetResourcesNames("base");
+            string imagesNames = popup.AskValue(resources, resources.Select(x => x.Split('.')[3]).ToArray());
+
+            if(popup.Confirmed)
+            {
+                try
+                {
+                    LoadImage(ProgressPopup.Compute(() => new ImagePSI(Assembly.GetExecutingAssembly().GetManifestResourceStream(imagesNames)), "Chargement de l'image..."));
+                }
+                catch (Exception exception)
+                {
+                    ShowException(exception, "Impossible d'ouvrir l'image");
+                }
+            }
+        }
     }
 
     public enum HistogramChannel
