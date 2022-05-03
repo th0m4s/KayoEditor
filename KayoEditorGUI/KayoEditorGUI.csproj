@@ -27,7 +27,6 @@
   <ItemGroup>
     <EmbeddedResource Include="images\base\bellpeper.bmp" />
     <EmbeddedResource Include="images\base\damier.bmp" />
-    <EmbeddedResource Include="images\base\fox.bmp" />
     <EmbeddedResource Include="images\base\lenna.bmp" />
     <EmbeddedResource Include="images\base\marbles.bmp" />
     <EmbeddedResource Include="images\base\patchwork.bmp" />
