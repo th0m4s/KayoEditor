@@ -47,7 +47,7 @@
                 </Grid>
             </Grid>
             <Grid Name="Contents" Background="Transparent" Margin="0,22,0,0" AllowDrop="True" Drop="Contents_Drop" DragOver="Contents_DragOver" DragLeave="Contents_DragLeave">
-                <Grid Name="Grid_WelcomeScreen" Visibility="Visible">
+                <Grid Name="Grid_WelcomeScreen" Visibility="Collapsed">
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top"
                                Foreground="White" FontSize="50" Margin="0,90,0,0">Kayo Editor</TextBlock>
                     <TextBlock HorizontalAlignment="Center" Text="Créé par Thomas BULLIMORE et Thomas LEDOS" TextWrapping="Wrap"
@@ -70,7 +70,7 @@
                             </Button>
                         </Grid>
                         <Button Content="Créer un QR code..." HorizontalAlignment="Center" VerticalAlignment="Top"
-                            Padding="3" Width="130" Name="CreateQRC_Button" Click="CreateQRC_Clicked" />
+                            Padding="3" Width="130" Name="CreateQRC_Button" Click="CreateQRC_Clicked" Margin="6,0,0,0" />
                         <Button Content="Créer une fractale..." HorizontalAlignment="Center" VerticalAlignment="Top"
                             Padding="3" Width="130" Name="CreateFractal_Button" Click="CreateFractal_Clicked"/>
                     </UniformGrid>
@@ -86,11 +86,11 @@
                     </Border>
 
                 </Grid>
-                <Grid Name="Grid_EditorScreen" Visibility="Collapsed">
+                <Grid Name="Grid_EditorScreen" Visibility="Visible">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40" />
                         <RowDefinition Height="1*" />
-                        <RowDefinition Height="40" />
+                        <RowDefinition Height="25" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
@@ -146,7 +146,17 @@
                             </Style>
                         </StackPanel.Resources>
 
-                        <Button Content="Ouvrir..." VerticalAlignment="Center" Click="OpenImage_Clicked" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Margin="0" Width="80" Content="Ouvrir..." HorizontalAlignment="Center" 
+                                Padding="3" Click="OpenImage_Clicked" />
+                            <Button Margin="2,0,0,0" Grid.Column="1" Click="OpenImageLibrary_Click">
+                                <Image Source="images/icons/box.png"  Height="12" />
+                            </Button>
+                        </Grid>
                         <Button Name="SaveImageButton" Content="Sauvegarder..." Margin="0,3,0,10" Click="SaveImage_Click" />
 
                         <Button Name="ResetButton" Click="Reset_Click" Content="Réinitialiser" />
@@ -154,8 +164,9 @@
                     </StackPanel>
 
                     <Grid Name="PaintToolsGrid" Grid.Row="2" Grid.Column="1" Margin="10,0,10,0">
-                        <Rectangle Name="PaintColorPreview" Height="25" Width="25" HorizontalAlignment="Left" Fill="Red"
+                        <Rectangle Name="PaintColorPreview" Height="15" Width="15" HorizontalAlignment="Left" Fill="Red"
                                    MouseDown="PaintColorPreview_MouseDown" Cursor="Hand" />
+                        <TextBlock Foreground="White" Margin="20,3,0,3">Couleur de sticker</TextBlock>
                     </Grid>
                 </Grid>
             </Grid>

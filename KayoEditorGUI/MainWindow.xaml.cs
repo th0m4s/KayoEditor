@@ -141,6 +141,12 @@ namespace KayoEditorGUI
             if (dialog.ShowDialog() == true)
                 LoadImage(dialog.FileName);
         }
+
+        private bool RequestImageLoadConfirmation()
+        {
+            return loadedImage == null || MessagePopup.Show("Une image est déjà ouverte dans Kayo Editor !\nVoulez-vous charger cette nouvelle image ?", true, true)
+                        == MessagePopup.MessageResult.Continue;
+        }
         
         private void LoadImage(string filename)
         {
@@ -150,8 +156,7 @@ namespace KayoEditorGUI
                 {
                     ImagePSI loadingImage = ProgressPopup.Compute(() => new ImagePSI(filename), "Chargement de l'image...");
 
-                    if(loadedImage == null || MessagePopup.Show("Une image est déjà ouverte dans Kayo Editor !\nVoulez-vous charger cette nouvelle image ?", true, true) 
-                        == MessagePopup.MessageResult.Continue)
+                    if(RequestImageLoadConfirmation())
                     {
                         LoadImage(loadingImage, Path.GetFileName(filename));
                     }
@@ -560,13 +565,19 @@ namespace KayoEditorGUI
         {
             QuestionPopup popup = new QuestionPopup("Choisir une image :");
             string[] resources = GetResourcesNames("base");
-            string imagesNames = popup.AskValue(resources, resources.Select(x => x.Split('.')[3]).ToArray());
+            string imageName = popup.AskValue(resources, resources.Select(x => x.Split('.')[3]).ToArray());
 
             if(popup.Confirmed)
             {
                 try
                 {
-                    LoadImage(ProgressPopup.Compute(() => new ImagePSI(Assembly.GetExecutingAssembly().GetManifestResourceStream(imagesNames)), "Chargement de l'image..."));
+                    ImagePSI loadingImage = ProgressPopup.Compute(() => new ImagePSI(Assembly.GetExecutingAssembly().GetManifestResourceStream(imageName)), "Chargement de l'image...");
+
+                    if(RequestImageLoadConfirmation())
+                    {
+                        LoadImage(loadingImage, imageName.Split('.')[3] + ".bmp");
+                    }
+                    
                 }
                 catch (Exception exception)
                 {
